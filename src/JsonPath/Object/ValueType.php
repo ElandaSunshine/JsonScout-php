@@ -26,7 +26,7 @@ namespace JsonScout\JsonPath\Object;
 final readonly class ValueType
 {
     //==================================================================================================================
-    /** 
+    /**
      * Constructs a new ValueType object.
      * 
      * If no value is given, this will be an empty value. ({@see JsonScout\Object\Nothing::NoValue})

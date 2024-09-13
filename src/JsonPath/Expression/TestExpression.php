@@ -21,9 +21,11 @@
 
 namespace JsonScout\JsonPath\Expression;
 
+use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
+use JsonScout\JsonPath\Function\FunctionExtension;
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\LogicalType;
-
+use JsonScout\Util\RefUtil;
 
 
 final readonly class TestExpression
@@ -33,7 +35,17 @@ final readonly class TestExpression
     public function __construct(
         private ITestable $testExpr,
         private bool      $negate
-    ) {}
+    )
+    {
+        if (($testExpr instanceof FunctionExpression) && !$testExpr->validForContext(FunctionExtension::CONTEXT_TEST))
+        {
+            $unqualified_name = RefUtil::getUnqualifiedName($testExpr->extension->returnType);
+            throw new ExceptionFunctionExtension(
+                "function extension '{$testExpr->extension->getFullyQualifiedName()}' can not be used in a test expression, "
+                ."returns '$unqualified_name' but expected LogicalType (or NodesType)"
+            );
+        }
+    }
     
     //==================================================================================================================
     #[\Override]

@@ -19,7 +19,7 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Expression\Selector;
+namespace JsonScout\JsonPath\Expression;
 
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\Location;
@@ -27,7 +27,7 @@ use JsonScout\JsonPath\Object\NodesType;
 
 
 
-final readonly class ChildSelector
+final readonly class ChildSelectorExpression
     implements ISegmentSelector
 {
     //==================================================================================================================
@@ -37,7 +37,7 @@ final readonly class ChildSelector
 
     //==================================================================================================================
     #[\Override]
-    public function select(Node $root, NodesType $context)
+    public function process(Node $root, NodesType $context)
         : NodesType
     {
         $result = [];

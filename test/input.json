@@ -10,6 +10,7 @@
             }
         },
         {
+            "something": 2,
             "type": "Feature",
             "properties": {},
             "geometry": {

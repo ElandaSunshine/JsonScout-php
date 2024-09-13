@@ -21,9 +21,12 @@
 
 namespace JsonScout\JsonPath\Expression;
 
+use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
+use JsonScout\JsonPath\Function\FunctionExtension;
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\ValueType;
+use JsonScout\Util\RefUtil;
 
 
 
@@ -34,20 +37,11 @@ final readonly class ComparisonExpression
     private static function compareEqual(ValueType $left, ValueType $right)
         : bool
     {
-        if (!$left->hasValue() || !$right->hasValue())
-        {
-            return ($left === $right);
-        }
-
         $lvalue = $left ->value;
         $rvalue = $right->value;
-
-        if (($lvalue instanceof \stdClass) || ($rvalue instanceof \stdClass))
-        {
-            return ($lvalue == $rvalue);
-        }
         
-        if ((is_int($lvalue) || is_float($lvalue)) && (is_int($rvalue) || is_float($rvalue)))
+        if (((is_int($lvalue) || is_float($lvalue)) && (is_int($rvalue) || is_float($rvalue)))
+            || (($lvalue instanceof \stdClass) && ($rvalue instanceof \stdClass)))
         {
             return ($lvalue == $rvalue);
         }
@@ -58,11 +52,6 @@ final readonly class ComparisonExpression
     private static function compareLess(ValueType $left, ValueType $right)
         : bool
     {
-        if (!$left->hasValue() || !$right->hasValue())
-        {
-            return false;
-        }
-
         $lvalue = $left ->value;
         $rvalue = $right->value;
 
@@ -80,11 +69,34 @@ final readonly class ComparisonExpression
     }
 
     //==================================================================================================================
+    private static function validateComparable(IComparable $comparable)
+        : void
+    {
+        if (!($comparable instanceof FunctionExpression))
+        {
+            return;
+        }
+
+        if (!$comparable->validForContext(FunctionExtension::CONTEXT_COMPARISON))
+        {
+            $unqualified_name = RefUtil::getUnqualifiedName($comparable->extension->returnType);
+            throw new ExceptionFunctionExtension(
+                "function extension '{$comparable->extension->getFullyQualifiedName()}' can not be used in a comparison, "
+                ."returns '$unqualified_name' but expected ValueType"
+            );
+        }
+    }
+
+    //==================================================================================================================
     public function __construct(
         private ComparisonOperation $type,
         private IComparable         $left,
         private IComparable         $right
-    ) {}
+    )
+    {
+        self::validateComparable($left);
+        self::validateComparable($right);
+    }
     
     //==================================================================================================================
     #[\Override]

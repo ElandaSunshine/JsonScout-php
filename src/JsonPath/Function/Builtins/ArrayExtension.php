@@ -19,34 +19,28 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Expression\Selector;
+namespace JsonScout\JsonPath\Function\Builtins;
 
-use JsonScout\JsonPath\Object\Node;
-use JsonScout\JsonPath\Object\Location;
-use JsonScout\JsonPath\Object\NodesType;
+use JsonScout\JsonPath\Function\ExtensionFunction;
+use JsonScout\JsonPath\Object\LogicalType;
+use JsonScout\JsonPath\Object\ValueType;
 
 
 
-final readonly class WildcardSelector
-    implements ISegmentSelector
+class ArrayExtension
 {
-    //==================================================================================================================
-    public function select(Node $root, NodesType $context)
-        : NodesType
+    #[ExtensionFunction]
+    public static function contains(ValueType $value, ValueType $search)
+        : LogicalType
     {
-        $result = [];
+        $val = $value->value;
+        $s   = $search->value;
 
-        foreach ($context->nodes as $node)
+        if (is_array($val) || $val instanceof \stdClass)
         {
-            if ($node->isCollection())
-            {
-                foreach ((array) $node->value as $key => $child_value)
-                {
-                    $result[] = new Node(new Location($key, $node), $child_value);
-                }
-            }
+            return LogicalType::fromBool(in_array($s, (array) $val, true));
         }
 
-        return new NodesType($result);
+        return LogicalType::False;
     }
 }

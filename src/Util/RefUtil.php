@@ -28,7 +28,7 @@ class RefUtil
     public static function getUnqualifiedName(string $typeName)
         : string
     {
-        $pos = strpos($typeName, '\\');
+        $pos = strrpos($typeName, '\\');
         return ($pos !== false ? substr($typeName, $pos + 1) : $typeName);
     }
 }

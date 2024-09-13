@@ -19,7 +19,7 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Function;
+namespace JsonScout\JsonPath\Function\Builtins;
 
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
@@ -27,7 +27,7 @@ use JsonScout\JsonPath\Object\ValueType;
 
 
 
-class BuiltinExtensions
+class StandardExtension
 {
     public static function length(ValueType $value)
         : ValueType
@@ -61,7 +61,7 @@ class BuiltinExtensions
             return LogicalType::False;
         }
         
-        return LogicalType::fromBool(preg_match('/^'.$pattern->value.'$/', $input->value) !== false);
+        return LogicalType::fromBool(preg_match('/^'.$pattern->value.'$/', $input->value) !== 0);
     }
     
     public static function search(ValueType $input, ValueType $pattern)
@@ -71,8 +71,8 @@ class BuiltinExtensions
         {
             return LogicalType::False;
         }
-        
-        return LogicalType::fromBool(preg_match('/'.$pattern->value.'/', $input->value) !== false);
+
+        return LogicalType::fromBool(preg_match('/'.$pattern->value.'/', $input->value) !== 0);
     }
     
     public static function value(NodesType $nodes)

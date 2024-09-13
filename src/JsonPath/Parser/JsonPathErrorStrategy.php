@@ -23,15 +23,19 @@ namespace JsonScout\JsonPath\Parser;
 
 use Antlr\Antlr4\Runtime\Error\DefaultErrorStrategy;
 use Antlr\Antlr4\Runtime\Error\Exceptions\InputMismatchException;
+use Antlr\Antlr4\Runtime\Error\Exceptions\NoViableAltException;
 use Antlr\Antlr4\Runtime\IntervalSet;
 use Antlr\Antlr4\Runtime\Parser;
+use Antlr\Antlr4\Runtime\Token;
 use Antlr\Antlr4\Runtime\Vocabulary;
+
+
 
 class JsonPathErrorStrategy
     extends DefaultErrorStrategy
 {
     //==================================================================================================================
-    private static function getExpectedString(IntervalSet $expectedTokens, Vocabulary $vocab)
+    private static function getExpected(IntervalSet $expectedTokens, Vocabulary $vocab)
         : string
     {
         $expectedTokens->removeOne(JsonPathLexer::S);
@@ -72,19 +76,14 @@ class JsonPathErrorStrategy
         
         if ($expected_tokens === null)
         {
-            throw new \LogicException('Unexpected null expected tokens.');
+            throw new \LogicException('unexpected null expected tokens');
         }
         
         $offending_token = $e->getOffendingToken();
+        $msg = "mismatched input {$this->getTokenErrorDisplay($offending_token)} expecting "
+               .self::getExpected($expected_tokens, $recognizer->getVocabulary());
 
-        $msg = sprintf(
-            'mismatched input %s expecting %s',
-            $this->getTokenErrorDisplay($offending_token),
-            self::getExpectedString($expected_tokens, $recognizer->getVocabulary())
-        );
-
-        throw new ExceptionSyntaxError(
-            $msg,
+        throw new ExceptionSyntaxError($msg,
             ($offending_token?->getLine() ?? -1),
             ($offending_token?->getCharPositionInLine() ?? -1)
         );
@@ -101,15 +100,11 @@ class JsonPathErrorStrategy
 
         $this->beginErrorCondition($recognizer);
 
-        $t = $recognizer->getCurrentToken();
+        $t         = $recognizer->getCurrentToken();
         $tokenName = $this->getTokenErrorDisplay($t);
         $expecting = $this->getExpectedTokens($recognizer);
 
-        $msg = sprintf(
-            'extraneous input %s expecting %s',
-            $tokenName,
-            self::getExpectedString($expecting, $recognizer->getVocabulary())
-        );
+        $msg = "extraneous input $tokenName expecting ".self::getExpected($expecting, $recognizer->getVocabulary());
 
         throw new ExceptionSyntaxError($msg, ($t?->getLine() ?? -1), ($t?->getCharPositionInLine() ?? -1));
     }
@@ -122,15 +117,52 @@ class JsonPathErrorStrategy
 
         $this->beginErrorCondition($recognizer);
 
-        $t = $recognizer->getCurrentToken();
+        $t         = $recognizer->getCurrentToken();
         $expecting = $this->getExpectedTokens($recognizer);
 
         $msg = sprintf(
             'missing %s at %s',
-            self::getExpectedString($expecting, $recognizer->getVocabulary()),
+            self::getExpected($expecting, $recognizer->getVocabulary()),
             $this->getTokenErrorDisplay($t)
         );
 
         throw new ExceptionSyntaxError($msg, ($t?->getLine() ?? -1), ($t?->getCharPositionInLine() ?? -1));
+    }
+
+    protected function reportNoViableAlternative(Parser $recognizer, NoViableAltException $e): void
+    {
+        $tokens          = $recognizer->getTokenStream();
+        $offending_token = $recognizer->getCurrentToken();
+
+        if ($tokens !== null)
+        {
+            $startToken = $e->getStartToken();
+
+            if ($startToken === null)
+            {
+                throw new \LogicException('unexpected null start token');
+            }
+
+            if ($startToken->getType() === Token::EOF)
+            {
+                $msg = 'unexpected end of expression';
+            }
+            else
+            {
+                $input  = $tokens->getTextByTokens($e->getStartToken(), $e->getOffendingToken());
+                $unexpr = ($offending_token?->getText() ?? '<unknown input>');
+                $msg    = "unexpected input '$unexpr' at input '$input'";
+            }
+        }
+        else
+        {
+            $msg = "unexpected input '<unknown input>' at input '<unknown input>'";
+        }
+
+        throw new ExceptionSyntaxError(
+            $msg,
+            ($offending_token?->getLine() ?? -1),
+            (($offending_token?->getCharPositionInLine() ?? -2) + 1)
+        );
     }
 }

@@ -21,18 +21,49 @@
 
 namespace JsonScout\JsonPath\Expression;
 
+use JsonScout\JsonPath\Object\Location;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\Node;
+use JsonScout\JsonPath\Object\NodesType;
 use JsonScout\Util\RefUtil;
 
 
+
 abstract readonly class AbstractLogicalExpression
-    implements IFunctionParameter
+    implements IExpression,
+               IFunctionParameter
 {
     //==================================================================================================================
     public abstract function evaluate(Node $root, Node $current) : LogicalType;
 
     //==================================================================================================================
+    public function process(Node $root, NodesType $context)
+        : NodesType
+    {
+        $result = [];
+
+        foreach ($context->nodes as $node)
+        {
+            if (!$node->isCollection())
+            {
+                continue;
+            }
+
+            foreach ((array) $node->value as $key => $child_value)
+            {
+                $new_node = new Node(new Location($key, $node), $child_value);
+                $eval     = $this->evaluate($root, $new_node);
+
+                if ($eval === LogicalType::True)
+                {
+                    $result[] = $new_node;
+                }
+            }
+        }
+
+        return new NodesType($result);
+    }
+
     #[\Override]
     public function toParameter(string $parameterType, Node $root, Node $current)
         : LogicalType

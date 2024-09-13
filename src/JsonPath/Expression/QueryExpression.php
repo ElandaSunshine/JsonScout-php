@@ -31,21 +31,41 @@ use JsonScout\JsonPath\Parser\ExceptionInternalError;
 
 
 final readonly class QueryExpression
-    implements IComparable,
+    implements IExpression,
+               IComparable,
                ITestable,
                IFunctionParameter
 {
     //==================================================================================================================
+    /**
+     * @var bool Determines whether this query is a singular query, by that means,
+     *           was made up of only singular query segments.
+     */
+    private bool $singular;
+
+    //==================================================================================================================
     /** @param SegmentExpression[] $segments */
     public function __construct(
         private array $segments,
-        private bool  $relative,
-        public  bool  $singular
+        private bool  $relative
     )
-    {}
+    {
+        $singular = true;
+
+        foreach ($segments as $segment)
+        {
+            if (!$segment->singular)
+            {
+                $singular = false;
+                break;
+            }
+        }
+
+        $this->singular = $singular;
+    }
     
     //==================================================================================================================
-    public function evaluate(Node $root, NodesType $context)
+    public function process(Node $root, NodesType $context)
         : NodesType
     {        
         foreach ($this->segments as $segment)
@@ -55,7 +75,7 @@ final readonly class QueryExpression
                 break;
             }
 
-            $context = $segment->evaluate($root, $context);
+            $context = $segment->process($root, $context);
         }
 
         return $context;
@@ -71,7 +91,7 @@ final readonly class QueryExpression
             throw new ExceptionInternalError("falsely assumed was a singular query");
         }
 
-        $eval = $this->evaluate($root, new NodesType([ ($this->relative ? $current : $root) ]));
+        $eval = $this->process($root, new NodesType([ ($this->relative ? $current : $root) ]));
         return new ValueType(count($eval->nodes) > 0 ? $eval->nodes[0]->value : Nothing::NoValue);
     }
 
@@ -79,7 +99,7 @@ final readonly class QueryExpression
     public function test(Node $root, Node $current)
         : LogicalType
     {
-        $eval = $this->evaluate($root, new NodesType([ ($this->relative ? $current : $root) ]));
+        $eval = $this->process($root, new NodesType([ ($this->relative ? $current : $root) ]));
         return LogicalType::fromBool(count($eval->nodes) > 0);
     }
 
@@ -87,7 +107,7 @@ final readonly class QueryExpression
     public function toParameter(string $parameterType, Node $root, Node $current)
         : NodesType|LogicalType|ValueType
     {
-        $value = $this->evaluate($root, new NodesType([ ($this->relative ? $current : $root) ]));
+        $value = $this->process($root, new NodesType([ ($this->relative ? $current : $root) ]));
 
         return match($parameterType) {
             ValueType::class   => new ValueType($value->nodes[0]->value),

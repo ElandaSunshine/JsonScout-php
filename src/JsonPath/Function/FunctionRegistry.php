@@ -21,6 +21,10 @@
 
 namespace JsonScout\JsonPath\Function;
 
+use JsonScout\JsonPath\Function\Builtins\ArrayExtension;
+use JsonScout\JsonPath\Function\Builtins\StandardExtension;
+use JsonScout\JsonPath\Function\Builtins\StringExtension;
+
 
 
 /**
@@ -62,44 +66,30 @@ final class FunctionRegistry
 
     //==================================================================================================================
     /** 
-     * @var array<non-empty-string,FunctionExtension>
+     * @var array<non-empty-string,FunctionExtension> $extensions
      */
     private array $extensions = [];
+
+    /**
+     * @var string[] $namespaces
+     */
+    private array $namespaces = [];
 
     //==================================================================================================================
     private function __construct()
     {
-        // Standard extensions
-        $this->registerExtension('length', [ BuiltinExtensions::class, 'length' ]);
-        $this->registerExtension('count',  [ BuiltinExtensions::class, 'count'  ]);
-        $this->registerExtension('match',  [ BuiltinExtensions::class, 'match'  ]);
-        $this->registerExtension('search', [ BuiltinExtensions::class, 'search' ]);
-        $this->registerExtension('value',  [ BuiltinExtensions::class, 'value'  ]);
+        // StandardExtension extensions
+        $this->registerExtension('', 'length', [ StandardExtension::class, 'length' ]);
+        $this->registerExtension('', 'count',  [ StandardExtension::class, 'count'  ]);
+        $this->registerExtension('', 'match',  [ StandardExtension::class, 'match'  ]);
+        $this->registerExtension('', 'search', [ StandardExtension::class, 'search' ]);
+        $this->registerExtension('', 'value',  [ StandardExtension::class, 'value'  ]);
+
+        $this->registerUserExtension('array', ArrayExtension ::class);
+        $this->registerUserExtension('str',   StringExtension::class);
     }
 
     //==================================================================================================================
-    /**
-     * Tries to register a new function extension that complies with the specification.
-     * 
-     * @param non-empty-string          $name              The unique name for the function extension
-     * @param FunctionExtensionCallable $functionExtension The callable that should get executed
-     * 
-     * @throws ExceptionFunctionRegistration Thrown if a function extension by that name already exists or if the
-     * function extension doesn't comply with the specification.
-     * 
-     * @param-later-invoked-callable $functionExtension
-     */
-    public function registerExtension(string $name, callable $functionExtension)
-        : void
-    {
-        if (array_key_exists($name, $this->extensions))
-        {
-            throw new ExceptionFunctionRegistration("function extension with the name '$name' already registered");
-        }
-
-        $this->extensions[$name] = new FunctionExtension($name, $functionExtension);
-    }
-
     /**
      * Gets a function extension by name or null if no such function extension exists.
      * @param string $name The name of the function extension
@@ -109,5 +99,82 @@ final class FunctionRegistry
         : ?FunctionExtension
     {
         return ($this->extensions[$name] ?? null);
+    }
+
+    //==================================================================================================================
+    /**
+     * @param non-empty-string          $name
+     * @param FunctionExtensionCallable $functionExtension
+     */
+    private function registerExtension(string $namespace, string $name, callable $functionExtension)
+        : void
+    {
+        $full_name = $namespace . '_' . $name;
+
+        if (array_key_exists($full_name, $this->extensions))
+        {
+            throw new ExceptionFunctionRegistration(
+                "function extension with the name '$name' already registered for namespace '$namespace'"
+            );
+        }
+
+        $this->extensions[$full_name] = new FunctionExtension($namespace, $name, $functionExtension);
+    }
+
+    /**
+     * Tries to register a namespace with custom function extensions.
+     *
+     * @param string       $namespaceName The name of the namespace
+     * @param class-string $class         The class providing the extension functions
+     * @param class-string ...$other      Additional classes to register in this namespace
+     *
+     * @throws ExceptionFunctionRegistration Thrown if there was an issue registering this function extension
+     */
+    public function registerUserExtension(string $namespaceName, string $class, string ...$other)
+        : void
+    {
+        if (preg_match('/[a-z][0-9a-z]{2,}/', $namespaceName) === false)
+        {
+            throw new ExceptionFunctionRegistration(
+                "invalid extension namespace '$namespaceName', must start with a lowercase letter, "
+                ."must be at least 3 characters long and can only contain lowercase letters and numbers"
+            );
+        }
+
+        if (in_array($namespaceName, $this->namespaces, true))
+        {
+            throw new ExceptionFunctionRegistration("extension namespace '$namespaceName' already registered");
+        }
+
+        try
+        {
+            /** @var class-string $class_name */
+            foreach ([ $class, ...$other ] as $class_name)
+            {
+                $refl = new \ReflectionClass($class_name);
+
+                foreach ($refl->getMethods(\ReflectionMethod::IS_STATIC | \ReflectionMethod::IS_PUBLIC) as $method)
+                {
+                    $func_attributes = $method->getAttributes(ExtensionFunction::class);
+
+                    if (count($func_attributes) === 0)
+                    {
+                        continue;
+                    }
+
+                    /** @var ExtensionFunction $extension_function */
+                    $extension_function = $func_attributes[0]->newInstance();
+                    $func_name          = ($extension_function->name ?? $method->getName());
+
+                    $this->registerExtension($namespaceName, $func_name, [ $class_name, $method->getShortName() ]);
+                }
+
+                $this->namespaces[] = $namespaceName;
+            }
+        }
+        catch (\Exception $ex)
+        {
+            throw new ExceptionFunctionRegistration($ex->getMessage());
+        }
     }
 }

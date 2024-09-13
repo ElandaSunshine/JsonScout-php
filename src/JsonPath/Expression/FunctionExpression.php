@@ -21,12 +21,15 @@
 
 namespace JsonScout\JsonPath\Expression;
 
+use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
 use JsonScout\JsonPath\Function\FunctionExtension;
+use JsonScout\JsonPath\Function\FunctionRegistry;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\NodesType;
 use JsonScout\JsonPath\Object\ValueType;
 use JsonScout\Util\RefUtil;
+
 
 
 final readonly class FunctionExpression
@@ -35,13 +38,104 @@ final readonly class FunctionExpression
                IFunctionParameter
 {
     //==================================================================================================================
+    /** @param IFunctionParameter[] $array */
+    private static function popFront(array &$array)
+        : IFunctionParameter|false
+    {
+        $result = reset($array);
+
+        if ($result !== false)
+        {
+            unset($array[key($array)]);
+        }
+
+        return $result;
+    }
+
+    private static function validateArgument(\ReflectionParameter $parameter,
+                                             IFunctionParameter   $argument,
+                                             FunctionExtension    $ext,
+                                             int                  $index)
+        : void
+    {
+        assert($parameter->getType() instanceof \ReflectionNamedType);
+
+        /** @var class-string $type_name */
+        $type_name = $parameter->getType()->getName();
+        assert(in_array($type_name, [ ValueType::class, LogicalType::class, NodesType::class ], true));
+
+        $error = "";
+
+        if (!$argument->validateParameter($type_name, $error))
+        {
+            throw new ExceptionFunctionExtension(
+                "invalid function call to '$ext->extensionName' at parameter #$index ({$parameter->getName()}), ".$error
+            );
+        }
+    }
+
+    //==================================================================================================================
+    public FunctionExtension $extension;
+
+    //==================================================================================================================
     /**
      * @param array<IFunctionParameter> $arguments
      */
     public function __construct(
-        private FunctionExtension $extension,
-        private array             $arguments
-    ) {}
+        private array  $arguments,
+                string $extensionName
+    )
+    {
+        $registry  = FunctionRegistry::getInstance();
+        $extension = $registry->getExtension($extensionName);
+
+        if ($extension === null)
+        {
+            throw new ExceptionFunctionExtension("no function extension with name '$extensionName' was registered");
+        }
+
+        $temp_args = $arguments;
+
+        foreach ($extension->parameters as $i => $parameter)
+        {
+            $ctx = self::popFront($temp_args);
+
+            if ($parameter->isVariadic())
+            {
+                while ($ctx !== false)
+                {
+                    self::validateArgument($parameter, $ctx, $extension, $i);
+                    $ctx = self::popFront($temp_args);
+                }
+            }
+            else
+            {
+                if ($ctx === false)
+                {
+                    if (!$parameter->isDefaultValueAvailable())
+                    {
+                        $needs = count(
+                            array_filter($extension->parameters, function($param)
+                            {
+                                return !$param->isDefaultValueAvailable() && !$param->isVariadic();
+                            })
+                        );
+
+                        throw new ExceptionFunctionExtension(
+                            "too few arguments to function extension '{$extensionName}', "
+                            ."expected at least $needs but received only ".count($arguments)
+                        );
+                    }
+
+                    break;
+                }
+
+                self::validateArgument($parameter, $ctx, $extension, $i);
+            }
+        }
+
+        $this->extension = $extension;
+    }
 
     //==================================================================================================================
     public function evaluate(Node $root, Node $current)
@@ -138,8 +232,6 @@ final readonly class FunctionExpression
     }
     //==================================================================================================================
     public function validForContext(int $context) : bool { return ($this->extension->canBeUsedFor($context)); }
-    public function getExtensionName() : string { return $this->extension->extensionName; }
-    public function getReturnType() : string { return $this->extension->returnType; }
 
     //==================================================================================================================
     /**

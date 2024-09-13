@@ -21,15 +21,16 @@
 
 namespace JsonScout\JsonPath\Expression;
 
-use JsonScout\JsonPath\Expression\Selector\ChildSelector;
+use JsonScout\JsonPath\Expression\ChildSelectorExpression;
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\Location;
 use JsonScout\JsonPath\Object\NodesType;
-use JsonScout\JsonPath\Expression\Selector\ISegmentSelector;
+use JsonScout\JsonPath\Expression\ISegmentSelector;
 
 
 
 final readonly class SegmentExpression
+    implements IExpression
 {
     //==================================================================================================================
     private static function recurseNodes(NodesType $nodes)
@@ -70,11 +71,11 @@ final readonly class SegmentExpression
         private bool  $recursive
     )
     {
-        $this->singular = (count($this->selectors) === 1 && $this->selectors[0] instanceof ChildSelector);
+        $this->singular = (count($selectors) === 1 && $selectors[0] instanceof ChildSelectorExpression);
     }
     
     //==================================================================================================================
-    public function evaluate(Node $root, NodesType $context)
+    public function process(Node $root, NodesType $context)
         : NodesType
     {
         $result = [];
@@ -86,7 +87,7 @@ final readonly class SegmentExpression
         
         foreach ($this->selectors as $selector)
         {
-            array_push($result, ...$selector->select($root, $context)->nodes);
+            array_push($result, ...($selector->process($root, $context)->nodes));
         }
 
         return new NodesType($result);

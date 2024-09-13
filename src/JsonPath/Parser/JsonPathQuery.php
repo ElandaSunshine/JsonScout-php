@@ -42,6 +42,6 @@ final readonly class JsonPathQuery
         : NodesType
     {
         $root_node = new Node(new Location('$', null), $data);
-        return $this->expression->evaluate($root_node, new NodesType([ $root_node ]));
+        return $this->expression->process($root_node, new NodesType([ $root_node ]));
     }
 }

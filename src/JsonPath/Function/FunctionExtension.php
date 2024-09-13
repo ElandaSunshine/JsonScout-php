@@ -30,7 +30,7 @@ use Technically\CallableReflection\CallableReflection;
 
 /**
  * @phpstan-type FilterValue LogicalType|NodesType|ValueType
- * @phpstan-type FunctionExtensionCallable pure-callable(FilterValue...):FilterValue
+ * @phpstan-type FunctionExtensionCallable callable(FilterValue...):FilterValue
  */
 final readonly class FunctionExtension
 {
@@ -113,15 +113,16 @@ final readonly class FunctionExtension
      * @param-later-invoked-callable $callable
      */
     public function __construct(
+        public string   $namespace,
         public string   $extensionName,
                callable $callable
     )
     {
-        if (preg_match('/[a-z][a-z0-9_]*/', $extensionName) === false)
+        if (preg_match('/[a-z0-9_]+/', $extensionName) === false)
         {
             throw new ExceptionFunctionRegistration(
-                "invalid function extension name '$extensionName', must start with a lower-case letter and can only "
-                ."contain lower-case letters, digits und underscores"
+                "invalid function extension name '$extensionName', "
+                ."must be at least onc character long and can only contain lower-case letters, digits und underscores"
             );
         }
 
@@ -166,6 +167,9 @@ final readonly class FunctionExtension
 
     //==================================================================================================================
     public function canBeUsedFor(int $flag) : bool { return (($this->applicableContexts & $flag) == $flag); }
+
+    //==================================================================================================================
+    public function getFullyQualifiedName() : string { return $this->namespace.'_'.$this->extensionName; }
 
     //==================================================================================================================
     public function invoke(ValueType|NodesType|LogicalType ...$arguments)

@@ -19,14 +19,29 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Expression\Selector;
+namespace JsonScout\JsonPath\Expression;
 
+use JsonScout\JsonPath\Expression\AbstractLogicalExpression;
 use JsonScout\JsonPath\Object\Node;
+use JsonScout\JsonPath\Object\Location;
+use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
 
 
 
-interface ISegmentSelector
+final readonly class FilterSelectorExpression
+    implements ISegmentSelector
 {
-    public function select(Node $root, NodesType $context) : NodesType;
+    //==================================================================================================================
+    public function __construct(
+        public AbstractLogicalExpression $evaluable
+    ) {}
+
+    //==================================================================================================================
+    #[\Override]
+    public function process(Node $root, NodesType $context)
+        : NodesType
+    {
+        return $this->evaluable->process($root, $context);
+    }
 }

@@ -19,23 +19,8 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Parser;
-
-use RuntimeException;
+namespace JsonScout\JsonPath\Expression;
 
 
 
-class ExceptionSyntaxError extends RuntimeException
-{
-    public function __construct(string $message, int $line, int $column)
-    {
-        if ($line < 0 || $column < 0)
-        {
-            parent::__construct("$message", 0, null);
-        }
-        else
-        {
-            parent::__construct("$message (on line $line:$column)", 0, null);
-        }
-    }
-}
+interface ISegmentSelector extends IExpression {}

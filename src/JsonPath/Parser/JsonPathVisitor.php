@@ -23,9 +23,6 @@ namespace JsonScout\JsonPath\Parser;
 
 use Antlr\Antlr4\Runtime\Tree\AbstractParseTreeVisitor;
 use JsonScout\JsonPath\Expression;
-use JsonScout\JsonPath\Function\FunctionExtension;
-use JsonScout\JsonPath\Function\FunctionRegistry;
-use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
 use JsonScout\JsonPath\Object\ValueType;
@@ -40,20 +37,6 @@ class JsonPathVisitor
 	implements JsonPathParserVisitor
 {
 #region helpers
-    /** @param Context\FunctionArgumentContext[] $array */
-    private static function popFront(array &$array)
-        : Context\FunctionArgumentContext|false
-    {
-        $result = reset($array);
-
-        if ($result !== false)
-        {
-            unset($array[key($array)]);
-        }
-
-        return $result;
-    }
-
     /** @param class-string $class */
     private static function getExpected(string $class)
         : string
@@ -70,7 +53,7 @@ class JsonPathVisitor
     /**
      * @param Context\SegmentContext[]|Context\SingularSegmentContext[] $segmentArray
      */
-	private function queryFromSegments(array $segmentArray, bool $relative, bool|null $singular)
+	private function queryFromSegments(array $segmentArray, bool $relative)
 		: Expression\QueryExpression
 	{
 		$segments = [];
@@ -83,19 +66,7 @@ class JsonPathVisitor
 			$segments[] = $segment;
 		}
 
-        if ($singular === null)
-        {
-            foreach ($segments as $segment)
-            {
-                if (!$segment->singular)
-                {
-                    $singular = false;
-                    break;
-                }
-            }
-        }
-
-		return new Expression\QueryExpression($segments, $relative, ($singular ?? true));
+		return new Expression\QueryExpression($segments, $relative);
 	}
 
     /**
@@ -112,7 +83,7 @@ class JsonPathVisitor
         }
 
         $result = $this->visit($context);
-        assert($result instanceof Expression\Selector\ISegmentSelector);
+        assert($result instanceof Expression\ISegmentSelector);
 
         return new Expression\SegmentExpression([ $result ], $recursive);
     }
@@ -139,32 +110,6 @@ class JsonPathVisitor
 
         return new Expression\LogicalExpression($opType, $result);
     }
-
-    private function consumeArgument(\ReflectionParameter            $parameter,
-                                     Context\FunctionArgumentContext $ctx,
-                                     FunctionExtension               $ext,
-                                     int                             $index)
-        : Expression\IFunctionParameter
-    {
-        $argument = $this->visit($ctx);
-        assert($argument instanceof Expression\IFunctionParameter);
-        assert($parameter->getType() instanceof \ReflectionNamedType);
-
-        /** @var class-string $type_name */
-        $type_name = $parameter->getType()->getName();
-        assert(in_array($type_name, [ ValueType::class, LogicalType::class, NodesType::class ], true));
-
-        $error = "";
-
-        if (!$argument->validateParameter($type_name, $error))
-        {
-            throw new ExceptionFunctionExtension(
-                "invalid function call to '$ext->extensionName' at parameter #$index ({$parameter->getName()}), ".$error
-            );
-        }
-
-        return $argument;
-    }
 #endregion helpers
 #region query
 	#[\Override]
@@ -185,7 +130,7 @@ class JsonPathVisitor
 	{
         $segments = $context->segment();
         assert(is_array($segments));
-		return $this->queryFromSegments($segments, false, null);
+		return $this->queryFromSegments($segments, false);
 	}
 	
 	#[\Override]
@@ -194,7 +139,7 @@ class JsonPathVisitor
 	{
         $segments = $context->segment();
         assert(is_array($segments));
-        return $this->queryFromSegments($segments, true, null);
+        return $this->queryFromSegments($segments, true);
 	}
 
     #[\Override]
@@ -203,7 +148,7 @@ class JsonPathVisitor
     {
         $segments = $context->singularSegment();
         assert(is_array($segments));
-        return $this->queryFromSegments($segments, false, true);
+        return $this->queryFromSegments($segments, false);
     }
 
 	#[\Override]
@@ -212,7 +157,7 @@ class JsonPathVisitor
 	{
         $segments = $context->singularSegment();
         assert(is_array($segments));
-        return $this->queryFromSegments($segments, true, true);
+        return $this->queryFromSegments($segments, true);
 	}
 
     #[\Override]
@@ -244,65 +189,65 @@ class JsonPathVisitor
 #region selector
 	#[\Override]
 	public function visitNameSelector(Context\NameSelectorContext $context)
-		: Expression\Selector\ChildSelector
+		: Expression\ChildSelectorExpression
 	{
         $string = $context->STRING()?->getText();
 		assert($string !== null);
-		return new Expression\Selector\ChildSelector(substr($string, 1, -1));
+		return new Expression\ChildSelectorExpression(substr($string, 1, -1));
 	}
 
 	#[\Override]
 	public function visitWildcardSelector(Context\WildcardSelectorContext $context)
-		: Expression\Selector\WildcardSelector
+		: Expression\WildcardSelectorExpression
 	{
-		return new Expression\Selector\WildcardSelector();
+		return new Expression\WildcardSelectorExpression();
 	}
 
 	#[\Override]
 	public function visitSliceSelector(Context\SliceSelectorContext $context)
-		: Expression\Selector\SliceSelector
+		: Expression\SliceSelectorExpression
 	{
 		$start = (isset($context->start) ? (int) $context->start->getText() : null);
 		$end   = (isset($context->end)   ? (int) $context->end  ->getText() : null);
 		$step  = (isset($context->step)  ? (int) $context->step ->getText() : 1);
-	    return new Expression\Selector\SliceSelector($start, $end, $step);
+	    return new Expression\SliceSelectorExpression($start, $end, $step);
 	}
 
 	#[\Override]
 	public function visitIndexSelector(Context\IndexSelectorContext $context)
-        : Expression\Selector\ChildSelector
+        : Expression\ChildSelectorExpression
 	{
         $string = $context->INT()?->getText();
 		assert($string !== null);
-		return new Expression\Selector\ChildSelector((int) $string);
+		return new Expression\ChildSelectorExpression((int) $string);
 	}
 		
 	#[\Override]
 	public function visitFilterSelector(Context\FilterSelectorContext $context)
-		: Expression\Selector\FilterSelector
+		: Expression\FilterSelectorExpression
 	{
 		assert($context->logicalExpression() !== null);
 
 		$filter = $this->visit($context->logicalExpression());
 		assert($filter instanceof Expression\AbstractLogicalExpression);
 		
-	    return new Expression\Selector\FilterSelector($filter);
+	    return new Expression\FilterSelectorExpression($filter);
 	}
 
 	#[\Override]
 	public function visitSelector(Context\SelectorContext $context)
-		: Expression\Selector\ISegmentSelector
+		: Expression\ISegmentSelector
 	{
 		$child = $context->getChild(0);
 		assert($child !== null);
 
 		$result = $child->accept($this);
-		assert($result instanceof Expression\Selector\ISegmentSelector);
+		assert($result instanceof Expression\ISegmentSelector);
 
 	    return $result;
 	}
 
-    /** @return Expression\Selector\ISegmentSelector[] */
+    /** @return Expression\ISegmentSelector[] */
     #[\Override]
     public function visitBracketedSelection(Context\BracketedSelectionContext $context)
         : array
@@ -313,7 +258,7 @@ class JsonPathVisitor
         foreach ($context->selector() as $selector)
         {
             $expression = $this->visit($selector);
-            assert($expression instanceof Expression\Selector\ISegmentSelector);
+            assert($expression instanceof Expression\ISegmentSelector);
 
             $result[] = $expression;
         }
@@ -355,34 +300,34 @@ class JsonPathVisitor
 	
 	#[\Override]
 	public function visitNameSegment(Context\NameSegmentContext $context)
-		: Expression\Selector\ChildSelector
+		: Expression\ChildSelectorExpression
 	{
         $actor = ($context->memberName() ?? $context->nameSelector());
 		assert($actor !== null);
 		
 		$result = $this->visit($actor);
-		assert($result instanceof Expression\Selector\ChildSelector);
+		assert($result instanceof Expression\ChildSelectorExpression);
 
 		return $result;
 	}
 
     #[\Override]
     public function visitMemberName(Context\MemberNameContext $context)
-        : Expression\Selector\ChildSelector
+        : Expression\ChildSelectorExpression
     {
         $name = $context->NAME()?->getText();
         assert($name !== null);
-        return new Expression\Selector\ChildSelector($name);
+        return new Expression\ChildSelectorExpression($name);
     }
 		
 	#[\Override]
 	public function visitIndexSegment(Context\IndexSegmentContext $context)
-		: Expression\Selector\ChildSelector
+		: Expression\ChildSelectorExpression
 	{
 	    assert($context->indexSelector() !== null);
 
 		$result = $this->visit($context->indexSelector());
-		assert($result instanceof Expression\Selector\ChildSelector);
+		assert($result instanceof Expression\ChildSelectorExpression);
 
 		return $result;
 	}
@@ -395,7 +340,7 @@ class JsonPathVisitor
 	    assert($actor !== null);
 
 		$result = $this->visit($actor);
-		assert($result instanceof Expression\Selector\ChildSelector);
+		assert($result instanceof Expression\ChildSelectorExpression);
 
 		return new Expression\SegmentExpression([ $result ], false);
 	}
@@ -410,19 +355,6 @@ class JsonPathVisitor
 		
 		$result = $this->visit($actor);
 		assert($result instanceof Expression\ITestable);
-		
-		if ($context->functionExpression() !== null)
-		{
-			assert($result instanceof Expression\FunctionExpression);
-
-			if (!$result->validForContext(FunctionExtension::CONTEXT_TEST))
-			{
-				throw new ExceptionFunctionExtension(
-					"function extension '{$result->getExtensionName()}' can not be used in a test expression, returns "
-					."'{$result->getReturnType()}' but expected LogicalType (or NodesType)"
-				);
-			}
-		}
 
 	    return new Expression\TestExpression($result, ($context->OP_NOT() !== null));
 	}
@@ -560,19 +492,6 @@ class JsonPathVisitor
 		$result = $this->visit($actor);
 		assert($result instanceof Expression\IComparable);
 
-        if ($context->functionExpression() !== null)
-        {
-            assert($result instanceof Expression\FunctionExpression);
-
-            if (!$result->validForContext(FunctionExtension::CONTEXT_COMPARISON))
-            {
-                throw new ExceptionFunctionExtension(
-                    "function extension '{$result->getExtensionName()}' can not be used in a comparison, returns "
-                    ."'{$result->getReturnType()}' but expected ValueType"
-                );
-            }
-        }
-
 	    return $result;
 	}
 #endregion filter
@@ -587,59 +506,20 @@ class JsonPathVisitor
         $name = $this->visit($name_ctx);
         assert(is_string($name));
 
-        $registry  = FunctionRegistry::getInstance();
-        $extension = $registry->getExtension($name);
-
-        if ($extension === null)
-        {
-            throw new ExceptionFunctionExtension("no function extension with name '$name' was registered");
-        }
-
         $args_ctx = $context->functionArgument();
         assert(is_array($args_ctx));
 
-        $argument_contexts = $args_ctx;
-        $arguments         = [];
+        $arguments = [];
 
-        foreach ($extension->parameters as $i => $parameter)
+        foreach ($args_ctx as $arg)
         {
-            $ctx = self::popFront($argument_contexts);
+            $result = $this->visit($arg);
+            assert($result instanceof Expression\IFunctionParameter);
 
-            if ($parameter->isVariadic())
-            {
-                while ($ctx !== false)
-                {
-                    $arguments[] = $this->consumeArgument($parameter, $ctx, $extension, $i);
-                    $ctx         = self::popFront($argument_contexts);
-                }
-            }
-            else
-            {
-                if ($ctx === false)
-                {
-                    if (!$parameter->isDefaultValueAvailable())
-                    {
-                        $needs = count(
-                            array_filter($extension->parameters, function($param)
-                            {
-                                return !$param->isDefaultValueAvailable() && !$param->isVariadic();
-                            })
-                        );
-
-                        throw new ExceptionFunctionExtension(
-                            "too few arguments to function extension '{$extension->extensionName}', "
-                            ."expected at least $needs but received only ".count($args_ctx)
-                        );
-                    }
-
-                    break;
-                }
-
-                $arguments[] = $this->consumeArgument($parameter, $ctx, $extension, $i);
-            }
+            $arguments[] = $result;
         }
 
-        return new Expression\FunctionExpression($extension, $arguments);
+        return new Expression\FunctionExpression($arguments, $name);
     }
 
     #[\Override]

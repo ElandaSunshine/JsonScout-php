@@ -118,7 +118,7 @@ final class JsonScout
      * @throws ExceptionSyntaxError Thrown whenever the query has a syntax problem 
      * @throws ExceptionInternalError
      * Thrown whenever there was an internal issue with the library (because of the developer's stupidity)
-     * @throws ExceptionFunctionExtension Thrown whenever there was a typing issue involving a function extension
+     * @throws ExceptionFunctionExtension Thrown whenever there was an issue involving a function extension
      */
     public static function compile(string $query)
         : JsonPathQuery
@@ -132,9 +132,9 @@ final class JsonScout
         assert($interpreter instanceof ParserATNSimulator);
 
         $interpreter->setPredictionMode(PredictionMode::SLL);
-        $parser->addErrorListener(new SyntaxErrorListener());
-        $parser->setErrorHandler(new JsonPathErrorStrategy());
-        
+        $parser->setErrorHandler(new JsonPathErrorStrategy()); // Controls any errors we get during parsing
+        $parser->addErrorListener(new SyntaxErrorListener()); // Controls errors that were missed by our strategy
+
         $visitor = new JsonPathVisitor();
         $tree    = $parser->query();
 
@@ -159,7 +159,7 @@ final class JsonScout
      * @throws ExceptionSyntaxError Thrown whenever the query has a syntax problem
      * @throws ExceptionInternalError
      * Thrown whenever there was an internal issue with the library (because of the developer's stupidity)
-     * @throws ExceptionFunctionExtension Thrown whenever there was a typing issue involving a function extension
+     * @throws ExceptionFunctionExtension Thrown whenever there was an issue involving a function extension
      */
     public static function query(string $query, mixed $data)
         : NodesType

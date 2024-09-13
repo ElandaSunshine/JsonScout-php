@@ -19,23 +19,16 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Parser;
+namespace JsonScout\JsonPath\Function;
 
-use RuntimeException;
+use Attribute;
 
 
 
-class ExceptionSyntaxError extends RuntimeException
+#[Attribute(Attribute::TARGET_METHOD)]
+class ExtensionFunction
 {
-    public function __construct(string $message, int $line, int $column)
-    {
-        if ($line < 0 || $column < 0)
-        {
-            parent::__construct("$message", 0, null);
-        }
-        else
-        {
-            parent::__construct("$message (on line $line:$column)", 0, null);
-        }
-    }
+    public function __construct(
+        public ?string $name = null
+    ) {}
 }

@@ -19,46 +19,30 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Expression\Selector;
+namespace JsonScout\JsonPath\Expression;
 
-use JsonScout\JsonPath\Expression\AbstractLogicalExpression;
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\Location;
-use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
 
 
 
-final readonly class FilterSelector
+final readonly class WildcardSelectorExpression
     implements ISegmentSelector
 {
     //==================================================================================================================
-    public function __construct(
-        private AbstractLogicalExpression $evaluable
-    ) {}
-
-    //==================================================================================================================
-    #[\Override]
-    public function select(Node $root, NodesType $context)
+    public function process(Node $root, NodesType $context)
         : NodesType
     {
         $result = [];
 
         foreach ($context->nodes as $node)
         {
-            if (!$node->isCollection())
+            if ($node->isCollection())
             {
-                continue;
-            }
-
-            foreach ((array) $node->value as $key => $child_value)
-            {
-                $new_node = new Node(new Location($key, $node), $child_value);
-                $eval     = $this->evaluable->evaluate($root, $new_node);
-
-                if ($eval === LogicalType::True)
+                foreach ((array) $node->value as $key => $child_value)
                 {
-                    $result[] = $new_node;
+                    $result[] = new Node(new Location($key, $node), $child_value);
                 }
             }
         }
