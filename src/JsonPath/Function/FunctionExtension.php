@@ -1,10 +1,29 @@
 <?php
+/**
+ * MIT License
+ *
+ * Copyright (c) 2024 ElandaSunshine
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * @package   elandasunshine/jsonscout
+ * @author    Elanda
+ * @copyright 2024 ElandaSunshine
+ * @license   https://choosealicense.com/licenses/mit/
+ * @since     1.0.0
+ * @link      https://github.com/ElandaSunshine/JsonScout_php
+ */
 
-namespace JsonScout\JsonPath\Function\JsonPath\Function;
+namespace JsonScout\JsonPath\Function;
 
-use JsonScout\JsonPath\Function\JsonPath\Object\LogicalType;
-use JsonScout\JsonPath\Function\JsonPath\Object\NodesType;
-use JsonScout\JsonPath\Function\JsonPath\Object\ValueType;
+use JsonScout\JsonPath\Object\LogicalType;
+use JsonScout\JsonPath\Object\NodesType;
+use JsonScout\JsonPath\Object\ValueType;
 use Technically\CallableReflection\CallableReflection;
 
 
@@ -39,15 +58,21 @@ final readonly class FunctionExtension
             $error = "invalid $element for function extension '$extName', "
                     ."union and intersection types are not supported";
         }
-        else if (!in_array($type->getName(), [ ValueType::class, LogicalType::class, NodesType::class ], true))
-        {
-            $error = "invalid $element for function extension '$extName', "
-                    ."found type '{$type->getName()}' but expected either ValueType, LogicalType or NodesType";
-        }
         else
         {
-            return;
+            assert($type instanceof \ReflectionNamedType);
+
+            if (!in_array($type->getName(), [ ValueType::class, LogicalType::class, NodesType::class ], true))
+            {
+                $error = "invalid $element for function extension '$extName', "
+                    ."found type '{$type->getName()}' but expected either ValueType, LogicalType or NodesType";
+            }
+            else
+            {
+                return;
+            }
         }
+
         
         throw new ExceptionFunctionRegistration($error);
     }
@@ -70,11 +95,11 @@ final readonly class FunctionExtension
     }
 
     //==================================================================================================================
-    /** @var FunctionExtensionCallable */
+    /** @var FunctionExtensionCallable $callable */
     private mixed $callable;
     private int   $applicableContexts;
     
-    /** @var \ReflectionParameter[] */
+    /** @var \ReflectionParameter[] $parameters */
     public array $parameters;
 
     /** @var class-string $returnType  */
@@ -118,8 +143,10 @@ final readonly class FunctionExtension
 
         $type = $refl->getReturnType();
         self::validateType("return type", $extensionName, $type);
+        assert($type instanceof \ReflectionNamedType);
 
-        $name     = $type?->getName();
+        /** @var class-string $name */
+        $name     = $type->getName();
         $contexts = 0b0111;
 
         if (in_array($name, [ NodesType::class, LogicalType::class ], true))
@@ -133,7 +160,7 @@ final readonly class FunctionExtension
 
         $this->callable           = $callable;
         $this->applicableContexts = $contexts;
-        $this->returnType         = $type;
+        $this->returnType         = $name;
         $this->parameters         = $pars;
     }
 

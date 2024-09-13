@@ -19,17 +19,26 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout;
+namespace JsonScout\JsonPath\Parser;
 
-use RuntimeException;
+use Antlr\Antlr4\Runtime\Error\Exceptions\RecognitionException;
+use Antlr\Antlr4\Runtime\Error\Listeners\BaseErrorListener;
+use Antlr\Antlr4\Runtime\Recognizer;
 
 
 
-class ExceptionReadFailure
-    extends RuntimeException
+final class SyntaxErrorListener
+    extends BaseErrorListener
 {
-    public function __construct(string $message)
+    #[\Override]
+    public function syntaxError(Recognizer            $recognizer,
+                                ?object               $offendingSymbol,
+                                int                   $line,
+                                int                   $charPositionInLine,
+                                string                $msg,
+                                ?RecognitionException $exception)
+        : void
     {
-        parent::__construct($message);
+        throw new ExceptionSyntaxError($msg, $line, $charPositionInLine);
     }
 }

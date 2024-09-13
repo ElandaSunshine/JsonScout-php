@@ -1,16 +1,34 @@
 <?php
+/**
+ * MIT License
+ *
+ * Copyright (c) 2024 ElandaSunshine
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * @package   elandasunshine/jsonscout
+ * @author    Elanda
+ * @copyright 2024 ElandaSunshine
+ * @license   https://choosealicense.com/licenses/mit/
+ * @since     1.0.0
+ * @link      https://github.com/ElandaSunshine/JsonScout_php
+ */
 
-namespace JsonScout\JsonPath\Function\JsonPath\Parser;
+namespace JsonScout\JsonPath\Parser;
 
 use Antlr\Antlr4\Runtime\Tree\AbstractParseTreeVisitor;
-use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
 use JsonScout\JsonPath\Expression;
-use JsonScout\JsonPath\Function\JsonPath\Function\FunctionExtension;
-use JsonScout\JsonPath\Function\JsonPath\Function\FunctionRegistry;
-use JsonScout\JsonPath\Function\JsonPath\Object\LogicalType;
-use JsonScout\JsonPath\Function\JsonPath\Object\NodesType;
-use JsonScout\JsonPath\Function\JsonPath\Object\ValueType;
-use JsonScout\JsonPath\Function\JsonPath\Parser\Context\FunctionArgumentContext;
+use JsonScout\JsonPath\Function\FunctionExtension;
+use JsonScout\JsonPath\Function\FunctionRegistry;
+use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
+use JsonScout\JsonPath\Object\LogicalType;
+use JsonScout\JsonPath\Object\NodesType;
+use JsonScout\JsonPath\Object\ValueType;
 
 
 
@@ -22,9 +40,9 @@ class JsonPathVisitor
 	implements JsonPathParserVisitor
 {
 #region helpers
-    /** @param FunctionArgumentContext[] $array */
+    /** @param Context\FunctionArgumentContext[] $array */
     private static function popFront(array &$array)
-        : FunctionArgumentContext|false
+        : Context\FunctionArgumentContext|false
     {
         $result = reset($array);
 
@@ -130,12 +148,13 @@ class JsonPathVisitor
     {
         $argument = $this->visit($ctx);
         assert($argument instanceof Expression\IFunctionParameter);
-
         assert($parameter->getType() instanceof \ReflectionNamedType);
 
         /** @var class-string $type_name */
         $type_name = $parameter->getType()->getName();
-        $error     = "";
+        assert(in_array($type_name, [ ValueType::class, LogicalType::class, NodesType::class ], true));
+
+        $error = "";
 
         if (!$argument->validateParameter($type_name, $error))
         {
@@ -395,13 +414,12 @@ class JsonPathVisitor
 		if ($context->functionExpression() !== null)
 		{
 			assert($result instanceof Expression\FunctionExpression);
-			$extension = $result->extension;
 
-			if (!$extension->canBeUsedFor(FunctionExtension::CONTEXT_TEST))
+			if (!$result->validForContext(FunctionExtension::CONTEXT_TEST))
 			{
 				throw new ExceptionFunctionExtension(
-					"function extension '{$extension->extensionName}' can not be used in a test expression, returns "
-					."'{$extension->returnType}' but expected either ".LogicalType::class." or ".NodesType::class
+					"function extension '{$result->getExtensionName()}' can not be used in a test expression, returns "
+					."'{$result->getReturnType()}' but expected LogicalType (or NodesType)"
 				);
 			}
 		}
@@ -545,13 +563,12 @@ class JsonPathVisitor
         if ($context->functionExpression() !== null)
         {
             assert($result instanceof Expression\FunctionExpression);
-            $extension = $result->extension;
 
-            if (!$extension->canBeUsedFor(FunctionExtension::CONTEXT_COMPARISON))
+            if (!$result->validForContext(FunctionExtension::CONTEXT_COMPARISON))
             {
                 throw new ExceptionFunctionExtension(
-                    "function extension '{$extension->extensionName}' can not be used in a comparison, returns "
-                    ."'{$extension->returnType}' but expected ".ValueType::class
+                    "function extension '{$result->getExtensionName()}' can not be used in a comparison, returns "
+                    ."'{$result->getReturnType()}' but expected ValueType"
                 );
             }
         }

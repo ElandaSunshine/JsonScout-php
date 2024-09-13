@@ -7,10 +7,9 @@ use JsonScout\JsonPath\Object\NodesType;
 
 
 
-$query = "$..[?count(@) < 2]";
+$query = "$[?count(@) < 2]";
 
-try
-{
+
     $start = microtime(true);
     $expr  = JsonScout::compile($query);
     $end   = microtime(true);
@@ -21,8 +20,4 @@ try
     echo "Responded in (ms): {$diff}\n";
     echo $result->toJson(NodesType::FLAG_NODES_AS_OBJECTS | NodesType::FLAG_INLINE,
                          JSON_PRETTY_PRINT);
-}
-catch (Exception $ex)
-{
-    echo get_class($ex).": {$ex->getMessage()}";
-}
+

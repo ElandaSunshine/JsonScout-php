@@ -1,13 +1,32 @@
 <?php
+/**
+ * MIT License
+ *
+ * Copyright (c) 2024 ElandaSunshine
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * @package   elandasunshine/jsonscout
+ * @author    Elanda
+ * @copyright 2024 ElandaSunshine
+ * @license   https://choosealicense.com/licenses/mit/
+ * @since     1.0.0
+ * @link      https://github.com/ElandaSunshine/JsonScout_php
+ */
 
-namespace JsonScout\JsonPath\Function\JsonPath\Expression;
+namespace JsonScout\JsonPath\Expression;
 
-use JsonScout\JsonPath\Function\JsonPath\Function\FunctionExtension;
-use JsonScout\JsonPath\Function\JsonPath\Object\LogicalType;
-use JsonScout\JsonPath\Function\JsonPath\Object\Node;
-use JsonScout\JsonPath\Function\JsonPath\Object\NodesType;
-use JsonScout\JsonPath\Function\JsonPath\Object\ValueType;
-
+use JsonScout\JsonPath\Function\FunctionExtension;
+use JsonScout\JsonPath\Object\LogicalType;
+use JsonScout\JsonPath\Object\Node;
+use JsonScout\JsonPath\Object\NodesType;
+use JsonScout\JsonPath\Object\ValueType;
+use JsonScout\Util\RefUtil;
 
 
 final readonly class FunctionExpression
@@ -20,12 +39,12 @@ final readonly class FunctionExpression
      * @param array<IFunctionParameter> $arguments
      */
     public function __construct(
-        public  FunctionExtension $extension,
+        private FunctionExtension $extension,
         private array             $arguments
     ) {}
 
     //==================================================================================================================
-    private function invoke(Node $root, Node $current)
+    public function evaluate(Node $root, Node $current)
         : ValueType|LogicalType|NodesType
     {
         $args = [];
@@ -44,7 +63,7 @@ final readonly class FunctionExpression
     public function test(Node $root, Node $current)
         : LogicalType
     {
-        $result = $this->invoke($root, $current);
+        $result = $this->evaluate($root, $current);
         assert($result instanceof NodesType || $result instanceof LogicalType);
 
         if ($result instanceof NodesType)
@@ -59,23 +78,68 @@ final readonly class FunctionExpression
     public function toComparable(Node $root, Node $current)
         : ValueType
     {
-        $result = $this->invoke($root, $current);
+        $result = $this->evaluate($root, $current);
         assert($result instanceof ValueType);
 
         return $result;
     }
 
     #[\Override]
-    public function toParameter(string $paramaterType, Node $root, Node $current)
+    public function toParameter(string $parameterType, Node $root, Node $current)
         : LogicalType|ValueType|NodesType
     {
-        $this_type = $this->extension->returnType->getName();
+        $this_type = $this->extension->returnType;
+        $value     = $this->evaluate($root, $current);
 
-        if ($paramaterType === $this->e)
+        if ($parameterType !== $this_type)
         {
-            
+            assert($value instanceof NodesType);
+            return LogicalType::fromBool(count($value->nodes) > 0);
         }
+
+        return $value;
     }
+
+    #[\Override]
+    public function validateParameter(string $parameterType, string &$error): bool
+    {
+        $this_type = $this->extension->returnType;
+
+        if ($parameterType !== $this_type)
+        {
+            $unqualified_this_name = RefUtil::getUnqualifiedName($this_type);
+
+            switch ($parameterType)
+            {
+                case LogicalType::class:
+                {
+                    if ($this_type !== NodesType::class)
+                    {
+                        $error = "expected LogicalType (or NodesType) instead got $unqualified_this_name";
+                        return false;
+                    }
+                }
+
+                case ValueType::class:
+                {
+                    $error = "expected ValueType instead got $unqualified_this_name";
+                    return false;
+                }
+
+                case NodesType::class:
+                {
+                    $error = "expected NodesType instead got $unqualified_this_name";
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+    //==================================================================================================================
+    public function validForContext(int $context) : bool { return ($this->extension->canBeUsedFor($context)); }
+    public function getExtensionName() : string { return $this->extension->extensionName; }
+    public function getReturnType() : string { return $this->extension->returnType; }
 
     //==================================================================================================================
     /**
@@ -90,6 +154,6 @@ final readonly class FunctionExpression
         assert($param->getType() instanceof \ReflectionNamedType);
 
         /** @var class-string */
-        return $param->getName();
+        return $param->getType()->getName();
     }
 }

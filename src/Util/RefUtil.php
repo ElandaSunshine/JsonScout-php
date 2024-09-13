@@ -19,14 +19,16 @@
  * @link      https://github.com/ElandaSunshine/JsonScout_php
  */
 
-namespace JsonScout\JsonPath\Expression\Selector;
-
-use JsonScout\JsonPath\Object\Node;
-use JsonScout\JsonPath\Object\NodesType;
+namespace JsonScout\Util;
 
 
 
-interface ISegmentSelector
+class RefUtil
 {
-    public function select(Node $root, NodesType $context) : NodesType;
+    public static function getUnqualifiedName(string $typeName)
+        : string
+    {
+        $pos = strpos($typeName, '\\');
+        return ($pos !== false ? substr($typeName, $pos + 1) : $typeName);
+    }
 }

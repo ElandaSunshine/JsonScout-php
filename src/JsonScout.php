@@ -1,20 +1,42 @@
 <?php
+/**
+ * MIT License
+ *
+ * Copyright (c) 2024 ElandaSunshine
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * @package   elandasunshine/jsonscout
+ * @author    Elanda
+ * @copyright 2024 ElandaSunshine
+ * @license   https://choosealicense.com/licenses/mit/
+ * @since     1.0.0
+ * @link      https://github.com/ElandaSunshine/JsonScout_php
+ */
 
-namespace JsonScout\JsonPath\Function;
+namespace JsonScout;
 
-use JsonScout\JsonPath\Function\JsonPath\Object\NodesType;
-use JsonScout\JsonPath\Function\JsonPath\Parser\JsonPathQuery;
-use JsonScout\JsonPath\Function\JsonPath\Parser\JsonPathVisitor;
-use JsonScout\JsonPath\Function\JsonPath\Parser\JsonPathLexer;
-use JsonScout\JsonPath\Function\JsonPath\Parser\JsonPathParser;
-use JsonScout\JsonPath\Function\JsonPath\Parser\ExceptionInternalError;
-use JsonScout\JsonPath\Function\JsonPath\Parser\ExceptionSyntaxError;
+use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
+use JsonScout\JsonPath\Object\NodesType;
+use JsonScout\JsonPath\Parser\JsonPathQuery;
+use JsonScout\JsonPath\Parser\JsonPathVisitor;
+use JsonScout\JsonPath\Parser\JsonPathLexer;
+use JsonScout\JsonPath\Parser\JsonPathParser;
+use JsonScout\JsonPath\Parser\ExceptionInternalError;
+use JsonScout\JsonPath\Parser\ExceptionSyntaxError;
 
 use Antlr\Antlr4\Runtime\Atn\ParserATNSimulator;
 use Antlr\Antlr4\Runtime\Atn\PredictionMode;
 use Antlr\Antlr4\Runtime\CommonTokenStream;
 use Antlr\Antlr4\Runtime\InputStream;
-use JsonScout\JsonPath\Function\JsonPath\Parser\JsonPathErrorStrategy;
+use JsonScout\JsonPath\Parser\JsonPathErrorStrategy;
+use JsonScout\JsonPath\Parser\SyntaxErrorListener;
+
 
 /**
  * The main class of JsonScout, listing the entry points for the various features this library provides.
@@ -110,7 +132,7 @@ final class JsonScout
         assert($interpreter instanceof ParserATNSimulator);
 
         $interpreter->setPredictionMode(PredictionMode::SLL);
-        $parser->addErrorListener(new ExceptionErrorListener());
+        $parser->addErrorListener(new SyntaxErrorListener());
         $parser->setErrorHandler(new JsonPathErrorStrategy());
         
         $visitor = new JsonPathVisitor();
