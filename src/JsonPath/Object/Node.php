@@ -23,12 +23,20 @@ namespace JsonScout\JsonPath\Object;
 
 
 
+/**
+ * Represents a value mapped to a location inside of a query argument.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node%23lang-php
+ */
 final readonly class Node
 {
 	//==================================================================================================================
 	/**
-	 * @param Location  $location The normalised JSONPath query, representing the location of this node starting from root
-	 * @param JSONValue $value    The JSON like PHP object this node contains
+     * Constructs a new Node object.
+     * 
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node%23lang-php
+     * 
+	 * @param Location  $location The location of this node inside the query argument
+	 * @param JSONValue $value    The JSON value object
 	 */
 	public function __construct(
         public Location $location,
@@ -37,48 +45,51 @@ final readonly class Node
 
 	//==================================================================================================================
 	/**
-	 *  Determines whether this node represents a structured data element.
-	 *  @return bool True if the contained value is either a JSON array or JSON object
+	 * Determines whether this node represents a structured data element.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isCollection%23lang-php
+	 * @return bool True if the contained value is either a JSON array or JSON object
 	 */
 	public function isCollection() : bool { return ($this->isArray() || $this->isMap()); }
 
     /**
-     *  Determines whether this node represents a JSON array.
-     *  @return bool True if the contained value is a JSON array
+     * Determines whether this node represents a JSON array.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isArray%23lang-php
+     * @return bool True if the contained value is a JSON array
      */
     public function isArray() : bool { return is_array($this->value); }
 
     /**
-     *  Determines whether this node represents a JSON map.
-     *  @return bool True if the contained value is a JSON map
+     * Determines whether this node represents a JSON map.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isMap%23lang-php
+     * @return bool True if the contained value is a JSON map
      */
     public function isMap() : bool { return ($this->value instanceof \stdClass); }
 
     /**
-     *  Determines whether this node represents a JSON number (int or float).
-     *  @return bool True if the contained value is a JSON number
+     * Determines whether this node represents a JSON number (int or float).
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isNumber%23lang-php
+     * @return bool True if the contained value is a JSON number
      */
     public function isNumber() : bool { return (is_float($this->value) || is_int($this->value)); }
 
     /**
-     *  Determines whether this node represents a JSON bool.
-     *  @return bool True if the contained value is a JSON bool
+     * Determines whether this node represents a JSON bool.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isBool%23lang-php
+     * @return bool True if the contained value is a JSON bool
      */
     public function isBool() : bool { return is_bool($this->value); }
 
     /**
-     *  Determines whether this node represents a JSON string.
-     *  @return bool True if the contained value is a JSON string
+     * Determines whether this node represents a JSON string.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isString%23lang-php
+     * @return bool True if the contained value is a JSON string
      */
     public function isString() : bool { return is_string($this->value); }
 
     /**
-     *  Determines whether this node represents a JSON null.
-     * 
-     *  Note that this is different from {@see JsonScout\Object\ValueType::hasValue()} in that this represents only
-     *  the JSON null value, if this is true this ValueType instance still has a value.
-     * 
-     *  @return bool True if the contained value is a JSON null
+     * Determines whether this node represents a JSON null value.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Node/isNull%23lang-php
+     * @return bool True if the contained value is a JSON null
      */
     public function isNull() : bool { return ($this->value === null); }
 }

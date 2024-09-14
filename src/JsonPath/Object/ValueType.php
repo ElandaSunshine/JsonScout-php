@@ -23,15 +23,18 @@ namespace JsonScout\JsonPath\Object;
 
 
 
+/**
+ * Holds any valid JSON value type.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/ValueType%23lang-php
+ */
 final readonly class ValueType
 {
     //==================================================================================================================
     /**
      * Constructs a new ValueType object.
-     * 
-     * If no value is given, this will be an empty value. ({@see JsonScout\Object\Nothing::NoValue})
-     * 
-     * @param JSONValue|Nothing $value The JSON value this object represents, or empty if it doesn't contain a value
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/ValueType/ValueType%23lang-php
+     * @param JSONValue|Nothing $value The JSON value this object represents,
+     * or {@see Nothing} if it doesn't contain a value
      */
     public function __construct(
         public mixed $value = Nothing::NoValue
@@ -40,7 +43,8 @@ final readonly class ValueType
     //==================================================================================================================
     /**
      * Determines whether this value object has a JSON value or not.
-     * @return bool True if the value is of type {@see JsonScout\Object\Nothing::NoValue}
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/ValueType/hasValue%23lang-php
+     * @return bool True if {@see $value} is of type {@see Nothing::NoValue}
      */
     public function hasValue() : bool { return ($this->value !== Nothing::NoValue); }
 }

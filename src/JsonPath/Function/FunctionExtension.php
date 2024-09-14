@@ -31,17 +31,29 @@ use Technically\CallableReflection\CallableReflection;
 /**
  * @phpstan-type FilterValue LogicalType|NodesType|ValueType
  * @phpstan-type FunctionExtensionCallable callable(FilterValue...):FilterValue
+ * 
+ * Provides a wrapper around a callable, that is, around a function that will be called in a JSONPath query.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
  */
 final readonly class FunctionExtension
 {
     //==================================================================================================================
-    /** Inside function extension arguments. */
+    /** 
+     * Inside function extension arguments.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
+     */
     public const int CONTEXT_ARGUMENT = 1;
 
-    /** Inside comparison operations. */
+    /** 
+     * Inside comparison operations.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
+     */
     public const int CONTEXT_COMPARISON = 2;
 
-    /** Inside test operations. */
+    /**
+     * Inside test operations.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php     
+     */
     public const int CONTEXT_TEST = 4;
 
     //==================================================================================================================
@@ -95,14 +107,22 @@ final readonly class FunctionExtension
     }
 
     //==================================================================================================================
-    /** @var FunctionExtensionCallable $callable */
+    /** 
+     * @var FunctionExtensionCallable $callable
+     */
     private mixed $callable;
     private int   $applicableContexts;
     
-    /** @var \ReflectionParameter[] $parameters */
+    /**
+     * @var \ReflectionParameter[] $parameters The reflection parameters of this function extension
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
+     */
     public array $parameters;
 
-    /** @var class-string $returnType  */
+    /** 
+     * @var class-string $returnType The return type class of this function extension
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
+     */
     public string $returnType;
 
     //==================================================================================================================

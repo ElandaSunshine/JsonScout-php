@@ -38,6 +38,7 @@ use JsonScout\JsonPath\Parser\JsonPathErrorStrategy;
 use JsonScout\JsonPath\Parser\SyntaxErrorListener;
 
 
+
 /**
  * The main class of JsonScout, listing the entry points for the various features this library provides.
  * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/JsonScout%23lang-php

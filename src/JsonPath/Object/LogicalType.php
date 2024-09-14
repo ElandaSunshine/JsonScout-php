@@ -23,30 +23,40 @@ namespace JsonScout\JsonPath\Object;
 
 
 
+/**
+ * A type that represents a boolean value in a way that differs from JSON boolean values.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/LogicalType%23lang-php
+ */
 enum LogicalType
 {
     //==================================================================================================================
-    /** Represents a distinct "true" value in a JSONPath query. */
+    /** 
+     * Represents a distinct 'true' value in a JSONPath query.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/LogicalType%23lang-php
+     */
     case True;
 
-    /** Represents a distinct "false" value in a JSONPath query. */
+    /** 
+     * Represents a distinct 'false' value in a JSONPath query.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/LogicalType%23lang-php
+     */
     case False;
 
     //==================================================================================================================
     /**
      * Converts a boolean value to a LogicalType case value, e.g. true => LogicalType::True and vice-versa.
+     * 
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/LogicalType/fromBool%23lang-php
+     * 
      * @param bool $value The boolean to convert
      * @return self The converted LogicalType
      */
-    public static function fromBool(bool $value)
-        : self
-    {
-        return ($value ? self::True : self::False);
-    }
+    public static function fromBool(bool $value) : self { return ($value ? self::True : self::False); }
     
     //==================================================================================================================
     /**
      * Inverts the current case to the opposite case, e.g. LogicalType::True => LogicalType::False and vice-versa.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/LogicalType/negate%23lang-php
      * @return self The negated LogicalType
      */
     public function negate()
@@ -60,6 +70,7 @@ enum LogicalType
 
     /**
      * Converts the current case value to its boolean variant, e.g. LogicalType::True => true and vice-versa.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/LogicalType/toBool%23lang-php
      * @return bool True if LogicalType::True, otherwise false
      */
     public function toBool() : bool { return ($this == LogicalType::True); }

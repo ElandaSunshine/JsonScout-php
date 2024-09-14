@@ -31,17 +31,7 @@ use JsonScout\JsonPath\Function\Builtins\StringExtension;
  * @phpstan-import-type FunctionExtensionCallable from FunctionExtension
  * 
  * Manages a global list of function extensions for JSONPath queries.
- * 
- * Every function extension consists of a name that is also the name of the function inside a query and a
- * specification compliant callable.
- * 
- * A function extension is said to comply with the specification if its return type and parameter types are
- * explicitly specified and is any of {@see ValueType}, {@see NodesType}
- * or {@see LogicalType}.
- * Union and intersection types are not allowed, however, variadic argument lists are.
- * 
- * Furthermore, a function extension can not have side effects, that is, it cannot temporarily store and retrieve data
- * that it acts upon, basically, it should, with the same input, output the same result with every call.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry%23lang-php
  */
 final class FunctionRegistry
 {
@@ -50,7 +40,8 @@ final class FunctionRegistry
 
     //==================================================================================================================
     /**
-     * Gets the function extension registry instance.
+     * Gets the global function extension registry instance.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/getInstance%23lang-php
      * @return self The current registry instance 
      */
     public static function getInstance()
@@ -91,7 +82,10 @@ final class FunctionRegistry
 
     //==================================================================================================================
     /**
-     * Gets a function extension by name or null if no such function extension exists.
+     * Gets a function extension by name (with namespace prefix) or null if no such function extension exists.
+     * 
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/getExtension%23lang-php
+     * 
      * @param string $name The name of the function extension
      * @return ?FunctionExtension The function extension or null
      */
@@ -101,32 +95,15 @@ final class FunctionRegistry
         return ($this->extensions[$name] ?? null);
     }
 
-    //==================================================================================================================
-    /**
-     * @param non-empty-string          $name
-     * @param FunctionExtensionCallable $functionExtension
-     */
-    private function registerExtension(string $namespace, string $name, callable $functionExtension)
-        : void
-    {
-        $full_name = $namespace . '_' . $name;
-
-        if (array_key_exists($full_name, $this->extensions))
-        {
-            throw new ExceptionFunctionRegistration(
-                "function extension with the name '$name' already registered for namespace '$namespace'"
-            );
-        }
-
-        $this->extensions[$full_name] = new FunctionExtension($namespace, $name, $functionExtension);
-    }
-
+    //------------------------------------------------------------------------------------------------------------------
     /**
      * Tries to register a namespace with custom function extensions.
      *
-     * @param string       $namespaceName The name of the namespace
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/registerUserExtension%23lang-php
+     * 
+     * @param string       $namespaceName The name of the extension namespace
      * @param class-string $class         The class providing the extension functions
-     * @param class-string ...$other      Additional classes to register in this namespace
+     * @param class-string ...$other      Additional classes to register for this namespace
      *
      * @throws ExceptionFunctionRegistration Thrown if there was an issue registering this function extension
      */
@@ -176,5 +153,25 @@ final class FunctionRegistry
         {
             throw new ExceptionFunctionRegistration($ex->getMessage());
         }
+    }
+
+    //==================================================================================================================
+    /**
+     * @param non-empty-string          $name
+     * @param FunctionExtensionCallable $functionExtension
+     */
+    private function registerExtension(string $namespace, string $name, callable $functionExtension)
+        : void
+    {
+        $full_name = $namespace . '_' . $name;
+
+        if (array_key_exists($full_name, $this->extensions))
+        {
+            throw new ExceptionFunctionRegistration(
+                "function extension with the name '$name' already registered for namespace '$namespace'"
+            );
+        }
+
+        $this->extensions[$full_name] = new FunctionExtension($namespace, $name, $functionExtension);
     }
 }

@@ -23,6 +23,10 @@ namespace JsonScout\JsonPath\Object;
 
 
 
+/**
+ * Represents the location of a node inside of a query argument.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Location%23lang-php
+ */
 final readonly class Location
 	implements \Stringable
 {
@@ -40,11 +44,22 @@ final readonly class Location
 	}
 
 	//==================================================================================================================
-	/** @var array<int|string> */
+	/**
+	 * @var array<int|string> $segments The list of child segments this location is comprised of
+	 */
 	public array $segments;
 
 	//==================================================================================================================
-	public function __construct(string|int $current, Location|Node|null $parent)
+	/**
+	 * Constructs a new Location object.
+	 * 
+ 	 * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Location/Location%23lang-php
+	 * 
+	 * @param string|int $key The key of the current child in the parent
+	 * @param Location|Node|null $parent The parent the node is a child of (either a Location or a Node), or null if
+	 * it is the root object
+	 */
+	public function __construct(string|int $key, Location|Node|null $parent)
 	{
 		$segments = [];
 		
@@ -57,12 +72,16 @@ final readonly class Location
 			array_push($segments, ...$parent->location->segments);
 		}
 
-		$this->segments = [ ...$segments, $current ];
+		$this->segments = [ ...$segments, $key ];
 	}
 
 	//==================================================================================================================
-	#[\Override]
-	public function __toString()
+	/**
+	 * Returns the normalised query string computed from the segments of this location object.
+ 	 * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Location/toString%23lang-php
+	 * @return string The normalised query string
+	 */
+	public function toString()
 		: string
 	{
 		$result = "$";
@@ -74,4 +93,8 @@ final readonly class Location
 
 		return $result;
 	}
+
+	//==================================================================================================================
+	#[\Override]
+	public function __toString() : string { return $this->toString(); }
 }

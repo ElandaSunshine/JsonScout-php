@@ -23,23 +23,37 @@ namespace JsonScout\JsonPath\Object;
 
 
 
+/**
+ * Represents a list of nodes from a query argument.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType%23lang-php
+ */
 final readonly class NodesType
 {
     //==================================================================================================================
-    /** Specifies that nodes should be unpacked in the JSON output. */
+    /** 
+     * Specifies that nodes should be unpacked in the JSON output.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/toJson%23lang-php
+     */
     public const FLAG_UNPACK = 1;
 
-    /** Specifies that if there is only one node, it should be inlined. */
+    /** 
+     * Specifies that if there is only one node, it should be inlined.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/toJson%23lang-php
+     */
     public const FLAG_INLINE = 2;
 
     /** 
-     * Specifies that if {@see JsonScout\NodeList::FLAG_UNPACK} is not set,
-     * nodes should be outputted as objects in an array.
+     * Specifies that nodes should be outputted as objects in an array.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/toJson%23lang-php
      */
     public const FLAG_NODES_AS_OBJECTS = 4;
 
     //==================================================================================================================
-    /** @param array<int,Node> $nodes */
+    /** 
+     * Constructs a new NodesType object.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/NodesType%23lang-php
+     * @param array<int,Node> $nodes The node list
+     */
     public function __construct(
         public array $nodes = []
     ) {}
@@ -47,6 +61,7 @@ final readonly class NodesType
     //==================================================================================================================
     /** 
      * Gets an array with all the nodes unpacked.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/toArray%23lang-php
      * @return JSONValue[] The value array
      */
     public function toArray()
@@ -56,8 +71,8 @@ final readonly class NodesType
     }
 
     /** 
-     * If there is just one node in the node-list, will return this node's value,
-     * otherwise {@see JsonScout\NodeList::toArray()} is called.
+     * If there is just one node in the node-list will return that node's value, otherwise an array of nodes is called.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/toValue%23lang-php
      * @return JSONValue The unpacked value
      */
     public function toValue()
@@ -69,20 +84,10 @@ final readonly class NodesType
     /**
      * Returns the contents of this node-list as JSON string.
      *
-     * If flag {@see JsonScout\NodeList::FLAG_UNPACK} is set, will unpack the nodes and only serialise their values.
-     *
-     * If flag {@see JsonScout\NodeList::FLAG_INLINE} is set and either {@see JsonScout\NodeList::FLAG_UNPACK} is unset
-     * and {@see JsonScout\NodeList::FLAG_NODES_AS_OBJECTS} is set or {@see JsonScout\NodeList::FLAG_UNPACK} is set,
-     * will inline the node list as a single element if there was only one node
-     *
-     * If flag {@see JsonScout\NodeList::FLAG_NODES_AS_OBJECTS} is set and {@see JsonScout\NodeList::FLAG_UNPACK}
-     * is not set, will return the node-list as an array of objects with name and value as child elements.
-     *
-     * Note that if flag {@see JsonScout\NodeList::FLAG_UNPACK} and {@see JsonScout\NodeList::FLAG_NODES_AS_OBJECTS}
-     * are not set, duplicate nodes will be removed as there can't be duplicate keys in a json object.
-     *
-     * @param int $flags       The result flags, specifying what to output
-     * @param int $encodeFlags The flags that can be passed to {@see json_encode}
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/NodesType/toJson%23lang-php
+     * 
+     * @param int $flags       The result flags, specifying how to output the nodes
+     * @param int $encodeFlags Any flags that can be passed to {@see json_encode}
      * 
      * @return string|false The JSON string or false if there was a problem encoding the nodes
      */

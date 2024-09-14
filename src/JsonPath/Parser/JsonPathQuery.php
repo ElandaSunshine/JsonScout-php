@@ -28,16 +28,33 @@ use JsonScout\JsonPath\Object\NodesType;
 
 
 
+/**
+ * Provides an interface to cache and execute a built query.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/JsonPathQuery%23lang-php
+ */
 final readonly class JsonPathQuery
 {
     //==================================================================================================================
+    /**
+     * Constructs a new JsonPathQuery instance from the given QueryExpression object.
+     * 
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/JsonPathQuery/JsonPathQuery%23lang-php
+     * 
+     * @param QueryExpression $expression The query expression
+     */
     public function __construct(
         private QueryExpression $expression
-    )
-    {}
+    ) {}
     
     //==================================================================================================================
-    /** @param JSONValue $data */
+    /**
+     * Executes the query on the given JSON data and returns the list of nodes.
+     * 
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/JsonPathQuery/execute%23lang-php
+     * 
+     * @param JSONValue $data The parsed JSON data object
+     * @return NodesType The resultant nodes list
+     */
     public function execute(mixed $data)
         : NodesType
     {

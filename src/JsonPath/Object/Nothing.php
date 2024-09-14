@@ -23,6 +23,10 @@ namespace JsonScout\JsonPath\Object;
 
 
 
+/**
+ * Represents a Nothing value for {@see ValueType} that is distinct from a JSON 'null' value.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/Nothing%23lang-php
+ */
 enum Nothing
 {
     case NoValue;
