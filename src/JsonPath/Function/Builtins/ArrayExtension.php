@@ -21,15 +21,27 @@
 
 namespace JsonScout\JsonPath\Function\Builtins;
 
-use JsonScout\JsonPath\Function\ExtensionFunction;
+use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\ValueType;
 
 
 
 class ArrayExtension
+    implements IExtensionProvider
 {
-    #[ExtensionFunction]
+    //==================================================================================================================
+    #[\Override]
+    public function createExtension()
+        : array
+    {
+        /** @phpstan-ignore return.type */
+        return [
+            'contains' => [ self::class, 'contains' ],
+        ];
+    }
+    
+    //==================================================================================================================
     public static function contains(ValueType $value, ValueType $search)
         : LogicalType
     {

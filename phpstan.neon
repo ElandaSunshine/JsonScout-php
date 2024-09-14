@@ -12,7 +12,7 @@ parameters:
         - src/JsonPath/Parser/JsonPathLexer.php
         - src/JsonPath/Parser/JsonPathParser.php
         - src/JsonPath/Parser/JsonPathParserVisitor.php
-
+        
     ignoreErrors:
     - identifier: property.onlyWritten
     - identifier: method.unused

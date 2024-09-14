@@ -21,14 +21,20 @@
 
 namespace JsonScout\JsonPath\Function;
 
-use Attribute;
 
 
-
-#[Attribute(Attribute::TARGET_METHOD)]
-class ExtensionFunction
+/**
+ * @phpstan-import-type FunctionExtensionCallable from FunctionExtension
+ * 
+ * Declares a single unit of function extensions for JSONPath queries.
+ * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/IExtensionProvider%23lang-php
+ */
+interface IExtensionProvider
 {
-    public function __construct(
-        public ?string $name = null
-    ) {}
+    /**
+     * Creates a list of functions to be registered with this provider.
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/IExtensionProvider%23lang-php
+     * @return array<non-empty-string,FunctionExtensionCallable> The list of function callbacks to register for this provider
+     */
+    public function createExtension() : array;
 }

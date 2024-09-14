@@ -21,15 +21,33 @@
 
 namespace JsonScout\JsonPath\Function\Builtins;
 
-use JsonScout\JsonPath\Function\ExtensionFunction;
+use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\ValueType;
 
 
 
 class StringExtension
+    implements IExtensionProvider
 {
-    #[ExtensionFunction]
+    //==================================================================================================================
+    #[\Override]
+    public function createExtension()
+        : array
+    {
+        /** @phpstan-ignore return.type */
+        return [
+            'contains'    => [ self::class, 'contains'    ],
+            'starts_with' => [ self::class, 'starts_with' ],
+            'ends_with'   => [ self::class, 'ends_with'   ],
+            'from'        => [ self::class, 'from'        ],
+            'to_lower'    => [ self::class, 'to_lower'    ],
+            'to_upper'    => [ self::class, 'to_upper'    ],
+            'concat'      => [ self::class, 'concat'      ],
+        ];
+    }
+    
+    //==================================================================================================================
     public static function contains(ValueType $value, ValueType $search)
         : LogicalType
     {
@@ -44,7 +62,6 @@ class StringExtension
         return LogicalType::False;
     }
 
-    #[ExtensionFunction]
     public static function starts_with(ValueType $value, ValueType $search)
         : LogicalType
     {
@@ -59,7 +76,6 @@ class StringExtension
         return LogicalType::False;
     }
 
-    #[ExtensionFunction]
     public static function ends_with(ValueType $value, ValueType $search)
         : LogicalType
     {
@@ -74,7 +90,6 @@ class StringExtension
         return LogicalType::False;
     }
 
-    #[ExtensionFunction]
     public static function from(ValueType $value)
         : ValueType
     {
@@ -103,7 +118,6 @@ class StringExtension
         return new ValueType();
     }
 
-    #[ExtensionFunction]
     public static function to_lower(ValueType $value)
         : ValueType
     {
@@ -117,7 +131,6 @@ class StringExtension
         return new ValueType();
     }
 
-    #[ExtensionFunction]
     public static function to_upper(ValueType $value)
         : ValueType
     {
@@ -131,7 +144,6 @@ class StringExtension
         return new ValueType();
     }
 
-    #[ExtensionFunction]
     public static function concat(ValueType $value, ValueType ...$elements)
         : ValueType
     {

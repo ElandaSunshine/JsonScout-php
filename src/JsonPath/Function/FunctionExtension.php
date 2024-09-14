@@ -31,30 +31,13 @@ use Technically\CallableReflection\CallableReflection;
 /**
  * @phpstan-type FilterValue LogicalType|NodesType|ValueType
  * @phpstan-type FunctionExtensionCallable callable(FilterValue...):FilterValue
- * 
- * Provides a wrapper around a callable, that is, around a function that will be called in a JSONPath query.
- * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
  */
 final readonly class FunctionExtension
 {
     //==================================================================================================================
-    /** 
-     * Inside function extension arguments.
-     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
-     */
-    public const int CONTEXT_ARGUMENT = 1;
-
-    /** 
-     * Inside comparison operations.
-     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
-     */
+    public const int CONTEXT_ARGUMENT   = 1;
     public const int CONTEXT_COMPARISON = 2;
-
-    /**
-     * Inside test operations.
-     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php     
-     */
-    public const int CONTEXT_TEST = 4;
+    public const int CONTEXT_TEST       = 4;
 
     //==================================================================================================================
     private static function validateType(string $element, string $extName, ?\ReflectionType $type)
@@ -85,7 +68,6 @@ final readonly class FunctionExtension
             }
         }
 
-        
         throw new ExceptionFunctionRegistration($error);
     }
 
@@ -107,7 +89,7 @@ final readonly class FunctionExtension
     }
 
     //==================================================================================================================
-    /** 
+    /**
      * @var FunctionExtensionCallable $callable
      */
     private mixed $callable;
@@ -115,18 +97,16 @@ final readonly class FunctionExtension
     
     /**
      * @var \ReflectionParameter[] $parameters The reflection parameters of this function extension
-     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
      */
     public array $parameters;
 
-    /** 
+    /**
      * @var class-string $returnType The return type class of this function extension
-     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionExtension%23lang-php
      */
     public string $returnType;
 
     //==================================================================================================================
-    /** 
+    /**
      * @param non-empty-string $extensionName
      * @param FunctionExtensionCallable $callable
      * 
@@ -146,7 +126,8 @@ final readonly class FunctionExtension
             );
         }
 
-        try {
+        try
+        {
             $refl = self::getReflector($callable);
         }
         catch (\Exception $ex)
