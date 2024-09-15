@@ -36,12 +36,17 @@ class MathExtension
     {
         /** @phpstan-ignore return.type */
         return [
-            'add' => [ self::class, 'add' ],
-            'sub' => [ self::class, 'sub' ],
-            'div' => [ self::class, 'div' ],
-            'mul' => [ self::class, 'mul' ],
-            'min' => [ self::class, 'min' ],
-            'max' => [ self::class, 'max' ],
+            'add'   => [ self::class, 'add'   ],
+            'sub'   => [ self::class, 'sub'   ],
+            'div'   => [ self::class, 'div'   ],
+            'mul'   => [ self::class, 'mul'   ],
+            'min'   => [ self::class, 'min'   ],
+            'max'   => [ self::class, 'max'   ],
+            'abs'   => [ self::class, 'abs'   ],
+            'ceil'  => [ self::class, 'ceil'  ],
+            'floor' => [ self::class, 'floor' ],
+            'round' => [ self::class, 'round' ],
+            'trunc' => [ self::class, 'trunc' ],
         ];
     }
     
@@ -129,5 +134,84 @@ class MathExtension
         }
         
         return new ValueType();
+    }
+
+    //==================================================================================================================
+    public static function abs(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (!(is_float($val) || is_int($val)))
+        {
+            return new ValueType();
+        }
+
+        return new ValueType(abs($val));
+    }
+
+    public static function ceil(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (!(is_float($val) || is_int($val)))
+        {
+            return new ValueType();
+        }
+
+        return new ValueType(ceil($val));
+    }
+
+    public static function floor(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (!(is_float($val) || is_int($val)))
+        {
+            return new ValueType();
+        }
+
+        return new ValueType(floor($val));
+    }
+
+    public static function round(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (!(is_float($val) || is_int($val)))
+        {
+            return new ValueType();
+        }
+
+        return new ValueType(round($val));
+    }
+
+    public static function sqrt(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (!(is_float($val) || is_int($val)))
+        {
+            return new ValueType();
+        }
+
+        return new ValueType(sqrt($val));
+    }
+
+    public static function trunc(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (!(is_float($val) || is_int($val)))
+        {
+            return new ValueType();
+        }
+
+        return new ValueType((int) $val);
     }
 }
