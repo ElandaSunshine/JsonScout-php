@@ -29,63 +29,6 @@ use JsonScout\JsonPath\Object\ValueType;
 class MathExtension
     implements IExtensionProvider
 {
-    /**
-     * @return array<int,float>
-     */
-    private static function mathHelper1(ValueType $op1, ValueType ...$other)
-        : array
-    {
-        $val1 = $op1->value;
-        
-        if (!(is_int($val1) || is_float($val1)))
-        {
-            return [];
-        }
-        
-        $result = [ $val1 ];
-        
-        foreach ($other as $op3)
-        {
-            $val3 = $op3->value;
-
-            if (is_int($val3) || is_float($val3))
-            {
-                $result[] = $val3;
-            }
-        }
-
-        return $result;
-    }
-    
-    /**
-     * @return array<int,float>
-     */
-    private static function mathHelper2(ValueType $op1, ValueType $op2, ValueType ...$other)
-        : array
-    {
-        $val1 = $op1->value;
-        $val2 = $op2->value;
-        
-        if (!(is_int($val1) || is_float($val1)) || !(is_int($val2) || is_float($val2)))
-        {
-            return [];
-        }
-        
-        $result = [ $val1, $val2 ];
-        
-        foreach ($other as $op3)
-        {
-            $val3 = $op3->value;
-
-            if (is_int($val3) || is_float($val3))
-            {
-                $result[] = $val3;
-            }
-        }
-
-        return $result;
-    }
-    
     //==================================================================================================================
     #[\Override]
     public function createExtension()
@@ -97,138 +40,94 @@ class MathExtension
             'sub' => [ self::class, 'sub' ],
             'div' => [ self::class, 'div' ],
             'mul' => [ self::class, 'mul' ],
+            'min' => [ self::class, 'min' ],
+            'max' => [ self::class, 'max' ],
         ];
     }
     
     //==================================================================================================================
-    public static function add(ValueType $op1, ValueType $op2, ValueType ...$other)
+    public static function add(ValueType $op1, ValueType $op2)
         : ValueType
     {
         $val1 = $op1->value;
         $val2 = $op2->value;
-        
-        if (!(is_int($val1) || is_float($val1)) || !(is_int($val2) || is_float($val2)))
+
+        if ((is_float($val1) || is_int($val1)) && (is_float($val2) || is_int($val2)))
         {
-            return new ValueType();
+            return new ValueType($val1 + $val2);
         }
         
-        $result = ($val1 + $val2);
-
-        foreach ($other as $op3)
-        {
-            $val3 = $op3->value;
-
-            if (is_int($val3) || is_float($val3))
-            {
-                $result += $val3;
-            }
-        }
-
-        return new ValueType($result);
+        return new ValueType();
     }
     
-    public static function sub(ValueType $op1, ValueType $op2, ValueType ...$other)
+    public static function sub(ValueType $op1, ValueType $op2)
         : ValueType
     {
         $val1 = $op1->value;
         $val2 = $op2->value;
-        
-        if (!(is_int($val1) || is_float($val1)) || !(is_int($val2) || is_float($val2)))
+
+        if ((is_float($val1) || is_int($val1)) && (is_float($val2) || is_int($val2)))
         {
-            return new ValueType();
+            return new ValueType($val1 - $val2);
         }
         
-        $result = ($val1 - $val2);
-
-        foreach ($other as $op3)
-        {
-            $val3 = $op3->value;
-
-            if (is_int($val3) || is_float($val3))
-            {
-                $result -= $val3;
-            }
-        }
-
-        return new ValueType($result);
+        return new ValueType();
     }
     
-    public static function div(ValueType $op1, ValueType $op2, ValueType ...$other)
+    public static function div(ValueType $op1, ValueType $op2)
         : ValueType
     {
         $val1 = $op1->value;
         $val2 = $op2->value;
-        
-        if (!(is_int($val1) || is_float($val1)) || !(is_int($val2) || is_float($val2)))
+
+        if ((is_float($val1) || is_int($val1)) && (is_float($val2) || is_int($val2)))
         {
-            return new ValueType();
+            return new ValueType($val1 / $val2);
         }
         
-        $result = ($val1 / $val2);
-
-        foreach ($other as $op3)
-        {
-            $val3 = $op3->value;
-
-            if (is_int($val3) || is_float($val3))
-            {
-                $result /= $val3;
-            }
-        }
-
-        return new ValueType($result);
+        return new ValueType();
     }
     
-    public static function mul(ValueType $op1, ValueType $op2, ValueType ...$other)
+    public static function mul(ValueType $op1, ValueType $op2)
         : ValueType
     {
         $val1 = $op1->value;
         $val2 = $op2->value;
-        
-        if (!(is_int($val1) || is_float($val1)) || !(is_int($val2) || is_float($val2)))
+
+        if ((is_float($val1) || is_int($val1)) && (is_float($val2) || is_int($val2)))
         {
-            return new ValueType();
+            return new ValueType($val1 * $val2);
         }
         
-        $result = ($val1 * $val2);
-
-        foreach ($other as $op3)
-        {
-            $val3 = $op3->value;
-
-            if (is_int($val3) || is_float($val3))
-            {
-                $result *= $val3;
-            }
-        }
-
-        return new ValueType($result);
+        return new ValueType();
     }
     
     //==================================================================================================================
-    public static function min(ValueType $op1, ValueType ...$other)
+    public static function min(ValueType $op1, ValueType $op2)
         : ValueType
     {
-        $values = self::mathHelper1($op1, ...$other);
-        
-        if (count($values) === 0)
+        $val1 = $op1->value;
+        $val2 = $op2->value;
+
+        if ((is_float($val1) || is_int($val1)) && (is_float($val2) || is_int($val2)))
         {
-            return new ValueType();
+            return new ValueType(min($val1, $val2));
         }
         
-        return new ValueType(min(...$values));
+        return new ValueType();
     }
     
-    public static function max(ValueType $op1, ValueType ...$other)
+    public static function max(ValueType $op1, ValueType $op2)
         : ValueType
     {
-        $values = self::mathHelper1($op1, ...$other);
-        
-        if (count($values) === 0)
+        $val1 = $op1->value;
+        $val2 = $op2->value;
+
+        if ((is_float($val1) || is_int($val1)) && (is_float($val2) || is_int($val2)))
         {
-            return new ValueType();
+            return new ValueType(max($val1, $val2));
         }
         
-        return new ValueType(max(...$values));
+        return new ValueType();
     }
 }
