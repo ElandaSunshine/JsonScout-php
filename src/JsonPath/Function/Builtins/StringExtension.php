@@ -37,10 +37,8 @@ class StringExtension
     {
         /** @phpstan-ignore return.type */
         return [
-            'contains'    => [ self::class, 'contains'    ],
             'starts_with' => [ self::class, 'starts_with' ],
             'ends_with'   => [ self::class, 'ends_with'   ],
-            'from'        => [ self::class, 'from'        ],
             'to_lower'    => [ self::class, 'to_lower'    ],
             'to_upper'    => [ self::class, 'to_upper'    ],
             'concat'      => [ self::class, 'concat'      ],
@@ -48,20 +46,6 @@ class StringExtension
     }
     
     //==================================================================================================================
-    public static function contains(ValueType $value, ValueType $search)
-        : LogicalType
-    {
-        $val = $value->value;
-        $s   = $search->value;
-
-        if (is_string($val) && is_string($s))
-        {
-            return LogicalType::fromBool(str_contains($val, $s));
-        }
-
-        return LogicalType::False;
-    }
-
     public static function starts_with(ValueType $value, ValueType $search)
         : LogicalType
     {
@@ -88,34 +72,6 @@ class StringExtension
         }
 
         return LogicalType::False;
-    }
-
-    public static function from(ValueType $value)
-        : ValueType
-    {
-        $val = $value->value;
-
-        if (is_string($val))
-        {
-            return $value;
-        }
-
-        if (is_numeric($val))
-        {
-            return new ValueType((string) $val);
-        }
-
-        if (is_bool($val))
-        {
-            return new ValueType($val ? 'true' : 'false');
-        }
-
-        if ($val === null)
-        {
-            return new ValueType('null');
-        }
-
-        return new ValueType();
     }
 
     public static function to_lower(ValueType $value)
@@ -154,10 +110,12 @@ class StringExtension
         {
             $val = $part->value;
 
-            if (is_string($val))
+            if (!is_string($val))
             {
-                $result .= $val;
+                return new ValueType();
             }
+
+            $result .= $val;
         }
 
         return new ValueType($result);

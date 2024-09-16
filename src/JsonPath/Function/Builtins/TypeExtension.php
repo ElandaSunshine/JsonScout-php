@@ -38,7 +38,12 @@ class TypeExtension
     {
         /** @phpstan-ignore return.type */
         return [
-            'array' => [ self::class, 'array' ],
+            'array'  => [ self::class, 'array'  ],
+            'object' => [ self::class, 'object' ],
+            'string' => [ self::class, 'string' ],
+            'number' => [ self::class, 'number' ],
+            'bool'   => [ self::class, 'bool'   ],
+            'typeof' => [ self::class, 'typeof' ],
         ];
     }
     
@@ -59,7 +64,7 @@ class TypeExtension
         return new ValueType($values);
     }
     
-    public static function map(ValueType ...$pairs)
+    public static function object(ValueType ...$pairs)
         : ValueType
     {
         $result = new \stdClass();
@@ -86,5 +91,114 @@ class TypeExtension
         }
 
         return new ValueType($result);
+    }
+    
+    //==================================================================================================================
+    public static function string(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+        
+        if (is_string($val))
+        {
+            return $value;
+        }
+        
+        if (is_float($val) || is_int($val))
+        {
+            return new ValueType(''.$val);
+        }
+        
+        if (is_bool($val))
+        {
+            return new ValueType($val ? 'true' : 'false');
+        }
+        
+        if (is_array($val) || $val instanceof \stdClass)
+        {
+            return new ValueType(json_encode($val));
+        }
+        
+        if ($val === null)
+        {
+            return new ValueType('null');
+        }
+        
+        return $value;
+    }
+    
+    public static function number(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (is_float($val) || is_int($val))
+        {
+            return new ValueType($val);
+        }
+        
+        if (is_array($val) || $val instanceof \stdClass)
+        {
+            return new ValueType(0);
+        }
+        
+        if ($val !== Nothing::NoValue)
+        {
+            return new ValueType((float) $val);
+        }
+        
+        return $value;
+    }
+    
+    public static function bool(ValueType $value)
+        : ValueType
+    {
+        $val = $value->value;
+
+        if (is_string($val))
+        {
+            return new ValueType($val !== '');
+        }
+        
+        if ($val !== Nothing::NoValue)
+        {
+            return new ValueType((bool) $val);
+        }
+        
+        return $value;
+    }
+
+    //==================================================================================================================
+    public static function typeof(ValueType $value)
+        : ValueType
+    {
+        if (!$value->hasValue())
+        {
+            return $value;
+        }
+
+        $val = $value->value;
+
+        if (is_float($val) || is_int($val))
+        {
+            return new ValueType('number');
+        }
+
+        if ($val instanceof \stdClass)
+        {
+            return new ValueType('object');
+        }
+
+        if ($val === null)
+        {
+            return new ValueType('null');
+        }
+
+        if (is_bool($val))
+        {
+            return new ValueType('bool');
+        }
+
+        return new ValueType(gettype($value->value));
     }
 }

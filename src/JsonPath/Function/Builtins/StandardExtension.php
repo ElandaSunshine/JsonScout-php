@@ -21,6 +21,7 @@
 
 namespace JsonScout\JsonPath\Function\Builtins;
 
+use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
 use JsonScout\JsonPath\Object\ValueType;
@@ -28,7 +29,23 @@ use JsonScout\JsonPath\Object\ValueType;
 
 
 class StandardExtension
+    implements IExtensionProvider
 {
+    //==================================================================================================================
+    public function createExtension()
+        : array
+    {
+        /** @phpstan-ignore return.type */
+        return [
+            'length' => [ self::class, 'length' ],
+            'count'  => [ self::class, 'count'  ],
+            'match'  => [ self::class, 'match'  ],
+            'search' => [ self::class, 'search' ],
+            'value'  => [ self::class, 'value'  ],
+        ];
+    }
+
+    //==================================================================================================================
     public static function length(ValueType $value)
         : ValueType
     {

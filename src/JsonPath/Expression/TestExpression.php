@@ -28,6 +28,7 @@ use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\Util\RefUtil;
 
 
+
 final readonly class TestExpression
     extends AbstractLogicalExpression
 {
@@ -41,7 +42,7 @@ final readonly class TestExpression
         {
             $unqualified_name = RefUtil::getUnqualifiedName($testExpr->extension->returnType);
             throw new ExceptionFunctionExtension(
-                "function extension '{$testExpr->extension->getFullyQualifiedName()}' can not be used in a test expression, "
+                "function extension '{$testExpr->extension->extensionName}' can not be used in a test expression, "
                 ."returns '$unqualified_name' but expected LogicalType (or NodesType)"
             );
         }

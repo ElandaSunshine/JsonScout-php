@@ -22,11 +22,11 @@
 namespace JsonScout\JsonPath\Function;
 
 use JsonScout\JsonPath\Function\Builtins\ArrayExtension;
+use JsonScout\JsonPath\Function\Builtins\CommonExtension;
 use JsonScout\JsonPath\Function\Builtins\MathExtension;
 use JsonScout\JsonPath\Function\Builtins\StandardExtension;
 use JsonScout\JsonPath\Function\Builtins\StringExtension;
-
-
+use JsonScout\JsonPath\Function\Builtins\TypeExtension;
 
 /**
  * @phpstan-import-type FunctionExtensionCallable from FunctionExtension
@@ -62,24 +62,17 @@ final class FunctionRegistry
      */
     private array $extensions = [];
 
-    /**
-     * @var array<non-empty-string,object[]> $namespaces
-     */
-    private array $namespaces = [];
-
     //==================================================================================================================
     private function __construct()
     {
-        // StandardExtension extensions
-        $this->registerStandardExtension('length');
-        $this->registerStandardExtension('count');
-        $this->registerStandardExtension('match');
-        $this->registerStandardExtension('search');
-        $this->registerStandardExtension('value');
+        $this->registerExtensionProvider(
+            // Standard extensions
+            StandardExtension::class,
 
-        $this->registerUserExtensions('array', ArrayExtension ::class);
-        $this->registerUserExtensions('str',   StringExtension::class);
-        $this->registerUserExtensions('math',  MathExtension  ::class);
+            // Additional extensions
+            ArrayExtension::class, StringExtension::class, MathExtension::class, TypeExtension::class,
+            CommonExtension::class
+        );
     }
 
     //==================================================================================================================
@@ -95,37 +88,22 @@ final class FunctionRegistry
     
     //------------------------------------------------------------------------------------------------------------------
     /**
-     * Tries to register a namespace with custom function extensions.
+     * Tries to register one or more function extension provider.
      *
-     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/registerUserExtension%23lang-php
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/registerExtensionProvider%23lang-php
      * 
-     * @param non-empty-string                 $namespace The name of the extension namespace
      * @param class-string<IExtensionProvider> $class     The class providing the extension functions
      * @param class-string<IExtensionProvider> ...$other  Additional classes to register for this namespace
      *
      * @throws ExceptionFunctionRegistration Thrown if there was an issue registering this function extension
      */
-    public function registerUserExtensions(string $namespace, string $class, string ...$other)
+    public function registerExtensionProvider(string $class, string ...$other)
         : void
     {
-        if (preg_match('/[a-z][0-9a-z]{2,}/', $namespace) === false)
-        {
-            throw new ExceptionFunctionRegistration(
-                "invalid extension namespace '$namespace', must start with a lowercase letter, "
-                ."must be at least 3 characters long and can only contain lowercase letters and numbers"
-            );
-        }
-
-        if (isset($this->namespaces[$namespace]))
-        {
-            throw new ExceptionFunctionRegistration("extension namespace '$namespace' already registered");
-        }
+        $classes = [ $class, ...$other ];
 
         try
         {
-            $classes = [ $class, ...$other ];
-            $this->namespaces[$namespace] = [];
-            
             foreach ($classes as $class_name)
             {
                 $interfaces = class_implements($class_name);
@@ -146,10 +124,8 @@ final class FunctionRegistry
                         throw new ExceptionFunctionRegistration("'$function' is not a callable");
                     }
                     
-                    $this->registerExtension($namespace, $name, $function);
+                    $this->registerExtension($name, $function);
                 }
-                
-                $this->namespaces[$namespace][] = $instance;
             }
         }
         catch (\Exception $ex)
@@ -158,33 +134,26 @@ final class FunctionRegistry
         }
     }
 
-    //==================================================================================================================
     /**
-     * @param non-empty-string          $name
-     * @param FunctionExtensionCallable $functionExtension
+     * Tries to register a callable as function extension.
+     * 
+     * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/registerExtension%23lang-php
+     * 
+     * @param non-empty-string          $name      The name of the function extension
+     * @param FunctionExtensionCallable $invocable The callable to register
+     * 
+     * @param-later-invoked-callable $invocable
      */
-    private function registerExtension(string $namespace, string $name, callable $functionExtension)
+    public function registerExtension(string $name, callable $invocable)
         : void
     {
-        $full_name = ($namespace.'_'.$name);
-
-        if (array_key_exists($full_name, $this->extensions))
+        if (array_key_exists($name, $this->extensions))
         {
             throw new ExceptionFunctionRegistration(
-                "function extension with the name '$name' already registered for namespace '$namespace'"
+                "function extension with the name '$name' already registered"
             );
         }
 
-        $this->extensions[$full_name] = new FunctionExtension($namespace, $name, $functionExtension);
-    }
-    
-    /**
-     * @param non-empty-string $name 
-     */
-    private function registerStandardExtension(string $name)
-        : void
-    {
-        /** @phpstan-ignore argument.type */
-        $this->registerExtension('', $name, [ StandardExtension::class, $name ]);
+        $this->extensions[$name] = new FunctionExtension($name, $invocable);
     }
 }

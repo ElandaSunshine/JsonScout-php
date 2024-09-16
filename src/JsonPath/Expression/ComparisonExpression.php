@@ -81,7 +81,7 @@ final readonly class ComparisonExpression
         {
             $unqualified_name = RefUtil::getUnqualifiedName($comparable->extension->returnType);
             throw new ExceptionFunctionExtension(
-                "function extension '{$comparable->extension->getFullyQualifiedName()}' can not be used in a comparison, "
+                "function extension '{$comparable->extension->extensionName}' can not be used in a comparison, "
                 ."returns '$unqualified_name' but expected ValueType"
             );
         }
