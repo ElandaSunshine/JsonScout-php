@@ -26,7 +26,8 @@
         "phpstan/phpstan": "^1.12",
         "phpstan/extension-installer":"^1.4",
         "phpstan/phpstan-deprecation-rules":"^1.2",
-        "phpstan/phpstan-strict-rules":"^1.6"
+        "phpstan/phpstan-strict-rules":"^1.6",
+        "phpunit/phpunit": "^11"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +36,8 @@
     },
     "config": {
         "allow-plugins": {
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": false
         },
         "platform": {
             "php": "8.3"

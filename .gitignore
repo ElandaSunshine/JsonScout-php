@@ -5,3 +5,9 @@ composer.phar
 # IDE Stuff
 .idea
 .vscode
+.antlr
+# Allow grammar generator settings
+!extra/grammar/.vscode
+
+# Custom stuff
+out

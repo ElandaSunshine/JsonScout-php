@@ -51,6 +51,11 @@ final readonly class SliceSelectorExpression
     {
         $result = [];
 
+		if ($this->step === 0)
+		{
+			return new NodesType;
+		}
+		
         foreach ($context->nodes as $node)
 		{
 			$value = $node->value;

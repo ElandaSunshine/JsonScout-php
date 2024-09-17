@@ -207,9 +207,11 @@ class JsonPathVisitor
 	public function visitSliceSelector(Context\SliceSelectorContext $context)
 		: Expression\SliceSelectorExpression
 	{
-		$start = (isset($context->start) ? (int) $context->start->getText() : null);
-		$end   = (isset($context->end)   ? (int) $context->end  ->getText() : null);
-		$step  = (isset($context->step)  ? (int) $context->step ->getText() : 1);
+		
+		$start = (isset($context->sliceStart) ? (int) $context->sliceStart->getText() : null);
+		$end   = (isset($context->sliceEnd)   ? (int) $context->sliceEnd  ->getText() : null);
+		$step  = (isset($context->sliceStep)  ? (int) $context->sliceStep ->getText() : 1);
+
 	    return new Expression\SliceSelectorExpression($start, $end, $step);
 	}
 
@@ -315,7 +317,7 @@ class JsonPathVisitor
     public function visitMemberName(Context\MemberNameContext $context)
         : Expression\ChildSelectorExpression
     {
-        $name = $context->NAME()?->getText();
+        $name = ($context->NAME() ?? $context->NULL() ?? $context->BOOLEAN())?->getText();
         assert($name !== null);
         return new Expression\ChildSelectorExpression($name);
     }

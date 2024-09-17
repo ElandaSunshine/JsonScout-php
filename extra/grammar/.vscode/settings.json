@@ -1,0 +1,10 @@
+{
+    "antlr4.generation": {
+        "language": "PHP",
+        "mode": "external",
+        "outputDir": "out",
+        "listeners": false,
+        "visitors": true,
+        "package": "JsonScout\\JsonPath\\Parser"
+    },
+}

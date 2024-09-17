@@ -110,7 +110,7 @@ final readonly class QueryExpression
         $value = $this->process($root, new NodesType([ ($this->relative ? $current : $root) ]));
 
         return match($parameterType) {
-            ValueType::class   => new ValueType($value->nodes[0]->value),
+            ValueType::class   => (count($value->nodes) > 0 ? new ValueType($value->nodes[0]->value) : new ValueType),
             LogicalType::class => LogicalType::fromBool(count($value->nodes) > 0),
             NodesType::class   => $value,
             default            => throw new ExceptionInternalError("invalid parametrisation for $parameterType")

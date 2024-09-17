@@ -49,7 +49,7 @@ functionExpression: functionName OP_PAREN_OPEN S* (functionArgument (S* OP_COMMA
 /* Selectors */
 nameSelector: STRING;
 wildcardSelector: OP_WILDCARD;
-sliceSelector: (start=INT S*)? OP_SLICE S* (end=INT S*)? (OP_SLICE (S* step=INT)?)?;
+sliceSelector: (sliceStart=INT S*)? OP_SLICE S* (sliceEnd=INT S*)? (OP_SLICE (S* sliceStep=INT)?)?;
 indexSelector: INT;
 filterSelector: OP_FILTER S* logicalExpression;
 
@@ -95,7 +95,7 @@ literal
     | NULL
 ;
 functionName: NAME;
-memberName: NAME;
+memberName: NAME|NULL|BOOLEAN;
 
 
 
