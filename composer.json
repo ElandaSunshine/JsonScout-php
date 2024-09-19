@@ -1,0 +1,49 @@
+{
+    "name": "elandasunshine/jsonscout",
+    "version": "1.0.0",
+    
+    "authors": [
+        {
+            "email": "elendaofficial@gmail.com",
+            "role": "lead",
+            "name": "Elanda",
+            "homepage": "https://github.com/ElandaOfficial"
+        }
+    ],
+    
+    "description": "Implements the full JSONPath draft (RFC 9535) for querying JSON documents.",
+    "homepage": "https://github.com/ElandaSunshine/JSONScout-PHP",
+    "keywords": [ "json", "jsonpath", "xpath", "query", "php", "parser" ],
+    "license": "MIT",
+    "type": "library",
+    
+    "require": {
+        "antlr/antlr4-php-runtime": "^0.9",
+        "technically/callable-reflection": "^0.4",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.12",
+        "phpstan/extension-installer":"^1.4",
+        "phpstan/phpstan-deprecation-rules":"^1.2",
+        "phpstan/phpstan-strict-rules":"^1.6",
+        "phpunit/phpunit": "^11"
+    },
+    "autoload": {
+        "psr-4": {
+            "JsonScout\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": false
+        },
+        "platform": {
+            "php": "8.3"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

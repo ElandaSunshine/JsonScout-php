@@ -1,0 +1,392 @@
+[
+    {
+        "name": "Android Green",
+        "hex": "#a4c639",
+        "rgb": [164, 198, 57]
+    },
+    {
+        "name": "Apple Green",
+        "hex": "#8db600",
+        "rgb": [141, 182, 0]
+    },
+    {
+        "name": "Army Green",
+        "hex": "#4b5320",
+        "rgb": [75, 83, 32]
+    },
+    {
+        "name": "Blue-Green",
+        "hex": "#0d98ba",
+        "rgb": [13, 152, 186]
+    },
+    {
+        "name": "Bottle Green",
+        "hex": "#006a4e",
+        "rgb": [0, 106, 78]
+    },
+    {
+        "name": "Bright Green",
+        "hex": "#6f0",
+        "rgb": [102, 255, 0]
+    },
+    {
+        "name": "British Racing Green",
+        "hex": "#004225",
+        "rgb": [0, 66, 37]
+    },
+    {
+        "name": "Cadmium Green",
+        "hex": "#006b3c",
+        "rgb": [0, 107, 60]
+    },
+    {
+        "name": "Cal Poly Green",
+        "hex": "#1e4d2b",
+        "rgb": [30, 77, 43]
+    },
+    {
+        "name": "Camouflage Green",
+        "hex": "#78866b",
+        "rgb": [120, 134, 107]
+    },
+    {
+        "name": "Caribbean Green",
+        "hex": "#0c9",
+        "rgb": [0, 204, 153]
+    },
+    {
+        "name": "Celadon Green",
+        "hex": "#2f847c",
+        "rgb": [47, 132, 124]
+    },
+    {
+        "name": "Dark Green",
+        "hex": "#013220",
+        "rgb": [1, 50, 32]
+    },
+    {
+        "name": "Dark Jungle Green",
+        "hex": "#1a2421",
+        "rgb": [26, 36, 33]
+    },
+    {
+        "name": "Dark Olive Green",
+        "hex": "#556b2f",
+        "rgb": [85, 107, 47]
+    },
+    {
+        "name": "Dark Pastel Green",
+        "hex": "#03c03c",
+        "rgb": [3, 192, 60]
+    },
+    {
+        "name": "Dark Sea Green",
+        "hex": "#8fbc8f",
+        "rgb": [143, 188, 143]
+    },
+    {
+        "name": "Dark Spring Green",
+        "hex": "#177245",
+        "rgb": [23, 114, 69]
+    },
+    {
+        "name": "Dartmouth Green",
+        "hex": "#00703c",
+        "rgb": [0, 112, 60]
+    },
+    {
+        "name": "Deep Jungle Green",
+        "hex": "#004b49",
+        "rgb": [0, 75, 73]
+    },
+    {
+        "name": "Electric Green",
+        "hex": "#0f0",
+        "rgb": [0, 255, 0]
+    },
+    {
+        "name": "Fern Green",
+        "hex": "#4f7942",
+        "rgb": [79, 121, 66]
+    },
+    {
+        "name": "Forest Green (Traditional)",
+        "hex": "#014421",
+        "rgb": [1, 68, 33]
+    },
+    {
+        "name": "Forest Green (Web)",
+        "hex": "#228b22",
+        "rgb": [34, 139, 34]
+    },
+    {
+        "name": "Green (Color Wheel) (X11 Green)",
+        "hex": "#0f0",
+        "rgb": [0, 255, 0]
+    },
+    {
+        "name": "Green (Crayola)",
+        "hex": "#1cac78",
+        "rgb": [28, 172, 120]
+    },
+    {
+        "name": "Green (Html/Css Green)",
+        "hex": "#008000",
+        "rgb": [0, 128, 0]
+    },
+    {
+        "name": "Green (Munsell)",
+        "hex": "#00a877",
+        "rgb": [0, 168, 119]
+    },
+    {
+        "name": "Green (Ncs)",
+        "hex": "#009f6b",
+        "rgb": [0, 159, 107]
+    },
+    {
+        "name": "Green (Pigment)",
+        "hex": "#00a550",
+        "rgb": [0, 165, 80]
+    },
+    {
+        "name": "Green (Ryb)",
+        "hex": "#66b032",
+        "rgb": [102, 176, 50]
+    },
+    {
+        "name": "Green-Yellow",
+        "hex": "#adff2f",
+        "rgb": [173, 255, 47]
+    },
+    {
+        "name": "Guppie Green",
+        "hex": "#00ff7f",
+        "rgb": [0, 255, 127]
+    },
+    {
+        "name": "Hooker'S Green",
+        "hex": "#49796b",
+        "rgb": [73, 121, 107]
+    },
+    {
+        "name": "Hunter Green",
+        "hex": "#355e3b",
+        "rgb": [53, 94, 59]
+    },
+    {
+        "name": "India Green",
+        "hex": "#138808",
+        "rgb": [19, 136, 8]
+    },
+    {
+        "name": "Islamic Green",
+        "hex": "#009000",
+        "rgb": [0, 144, 0]
+    },
+    {
+        "name": "Jungle Green",
+        "hex": "#29ab87",
+        "rgb": [41, 171, 135]
+    },
+    {
+        "name": "Kelly Green",
+        "hex": "#4cbb17",
+        "rgb": [76, 187, 23]
+    },
+    {
+        "name": "La Salle Green",
+        "hex": "#087830",
+        "rgb": [8, 120, 48]
+    },
+    {
+        "name": "Laurel Green",
+        "hex": "#a9ba9d",
+        "rgb": [169, 186, 157]
+    },
+    {
+        "name": "Lawn Green",
+        "hex": "#7cfc00",
+        "rgb": [124, 252, 0]
+    },
+    {
+        "name": "Light Green",
+        "hex": "#90ee90",
+        "rgb": [144, 238, 144]
+    },
+    {
+        "name": "Light Sea Green",
+        "hex": "#20b2aa",
+        "rgb": [32, 178, 170]
+    },
+    {
+        "name": "Lime Green",
+        "hex": "#32cd32",
+        "rgb": [50, 205, 50]
+    },
+    {
+        "name": "Lime (Web) (X11 Green)",
+        "hex": "#0f0",
+        "rgb": [0, 255, 0]
+    },
+    {
+        "name": "Lincoln Green",
+        "hex": "#195905",
+        "rgb": [25, 89, 5]
+    },
+    {
+        "name": "Medium Jungle Green",
+        "hex": "#1c352d",
+        "rgb": [28, 53, 45]
+    },
+    {
+        "name": "Medium Sea Green",
+        "hex": "#3cb371",
+        "rgb": [60, 179, 113]
+    },
+    {
+        "name": "Medium Spring Green",
+        "hex": "#00fa9a",
+        "rgb": [0, 250, 154]
+    },
+    {
+        "name": "Midnight Green (Eagle Green)",
+        "hex": "#004953",
+        "rgb": [0, 73, 83]
+    },
+    {
+        "name": "Mint Green",
+        "hex": "#98ff98",
+        "rgb": [152, 255, 152]
+    },
+    {
+        "name": "Moss Green",
+        "hex": "#addfad",
+        "rgb": [173, 223, 173]
+    },
+    {
+        "name": "Msu Green",
+        "hex": "#18453b",
+        "rgb": [24, 69, 59]
+    },
+    {
+        "name": "Napier Green",
+        "hex": "#2a8000",
+        "rgb": [42, 128, 0]
+    },
+    {
+        "name": "Neon Green",
+        "hex": "#39ff14",
+        "rgb": [57, 255, 20]
+    },
+    {
+        "name": "North Texas Green",
+        "hex": "#059033",
+        "rgb": [5, 144, 51]
+    },
+    {
+        "name": "Office Green",
+        "hex": "#008000",
+        "rgb": [0, 128, 0]
+    },
+    {
+        "name": "Pakistan Green",
+        "hex": "#060",
+        "rgb": [0, 102, 0]
+    },
+    {
+        "name": "Pale Green",
+        "hex": "#98fb98",
+        "rgb": [152, 251, 152]
+    },
+    {
+        "name": "Paris Green",
+        "hex": "#50c878",
+        "rgb": [80, 200, 120]
+    },
+    {
+        "name": "Pastel Green",
+        "hex": "#7d7",
+        "rgb": [119, 221, 119]
+    },
+    {
+        "name": "Persian Green",
+        "hex": "#00a693",
+        "rgb": [0, 166, 147]
+    },
+    {
+        "name": "Phthalo Green",
+        "hex": "#123524",
+        "rgb": [18, 53, 36]
+    },
+    {
+        "name": "Pine Green",
+        "hex": "#01796f",
+        "rgb": [1, 121, 111]
+    },
+    {
+        "name": "Rifle Green",
+        "hex": "#414833",
+        "rgb": [65, 72, 51]
+    },
+    {
+        "name": "Sacramento State Green",
+        "hex": "#00563f",
+        "rgb": [0, 86, 63]
+    },
+    {
+        "name": "Sap Green",
+        "hex": "#507d2a",
+        "rgb": [80, 125, 42]
+    },
+    {
+        "name": "Screamin' Green",
+        "hex": "#76ff7a",
+        "rgb": [118, 255, 122]
+    },
+    {
+        "name": "Sea Green",
+        "hex": "#2e8b57",
+        "rgb": [46, 139, 87]
+    },
+    {
+        "name": "Shamrock Green",
+        "hex": "#009e60",
+        "rgb": [0, 158, 96]
+    },
+    {
+        "name": "Spring Green",
+        "hex": "#00ff7f",
+        "rgb": [0, 255, 127]
+    },
+    {
+        "name": "Tea Green",
+        "hex": "#d0f0c0",
+        "rgb": [208, 240, 192]
+    },
+    {
+        "name": "Teal Green",
+        "hex": "#00827f",
+        "rgb": [0, 130, 127]
+    },
+    {
+        "name": "Turquoise Green",
+        "hex": "#a0d6b4",
+        "rgb": [160, 214, 180]
+    },
+    {
+        "name": "Ufo Green",
+        "hex": "#3cd070",
+        "rgb": [60, 208, 112]
+    },
+    {
+        "name": "Up Forest Green",
+        "hex": "#014421",
+        "rgb": [1, 68, 33]
+    },
+    {
+        "name": "Yellow-Green",
+        "hex": "#9acd32",
+        "rgb": [154, 205, 50]
+    }
+]

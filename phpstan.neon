@@ -1,0 +1,18 @@
+parameters:
+    level: 9
+    
+    paths:
+    - src
+
+    typeAliases:
+        JSONValue: array<mixed>|\stdClass|int|float|string|bool|null
+    
+    excludePaths:
+        analyse:
+        - src/JsonPath/Parser/JsonPathLexer.php
+        - src/JsonPath/Parser/JsonPathParser.php
+        - src/JsonPath/Parser/JsonPathParserVisitor.php
+        
+    ignoreErrors:
+    - identifier: property.onlyWritten
+    - identifier: method.unused
