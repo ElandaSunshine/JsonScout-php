@@ -36,29 +36,6 @@ class CommonExtension
     public function createExtension()
         : array
     {
-        /** @phpstan-ignore return.type */
-        return [
-            'contains' => [ self::class, 'contains' ],
-        ];
-    }
-    
-    //==================================================================================================================
-    public static function contains(ValueType $value, ValueType $search)
-        : LogicalType
-    {
-        $val = $value->value;
-        $s   = $search->value;
-
-        if (is_string($val) && is_string($s))
-        {
-            return LogicalType::fromBool(str_contains($val, $s));
-        }
-
-        if ((is_array($val) || $val instanceof \stdClass) && $s !== Nothing::NoValue)
-        {
-            return LogicalType::fromBool(in_array($s, (array) $val, true));
-        }
-
-        return LogicalType::False;
+        return [];
     }
 }

@@ -22,6 +22,7 @@
 namespace JsonScout\JsonPath\Parser;
 
 use Antlr\Antlr4\Runtime\Tree\AbstractParseTreeVisitor;
+use JsonScout\Config;
 use JsonScout\JsonPath\Expression;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
@@ -500,7 +501,7 @@ class JsonPathVisitor
 #region function
     #[\Override]
     public function visitFunctionExpression(Context\FunctionExpressionContext $context)
-        : Expression\FunctionExpression
+        : Expression\FunctionExpression|Expression\Literal
     {
         $name_ctx = $context->functionName();
         assert($name_ctx !== null);
@@ -520,7 +521,7 @@ class JsonPathVisitor
 
             $arguments[] = $result;
         }
-
+		
         return new Expression\FunctionExpression($arguments, $name);
     }
 

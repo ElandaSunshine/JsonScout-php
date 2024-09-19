@@ -35,16 +35,31 @@ class StringExtension
     public function createExtension()
         : array
     {
-        /** @phpstan-ignore return.type */
         return [
-            'starts_with' => [ self::class, 'starts_with' ],
-            'ends_with'   => [ self::class, 'ends_with'   ],
-            'to_lower'    => [ self::class, 'to_lower'    ],
-            'to_upper'    => [ self::class, 'to_upper'    ],
-            'concat'      => [ self::class, 'concat'      ],
+            'contains'    => self::contains(...),
+            'starts_with' => self::starts_with(...),
+            'ends_with'   => self::ends_with(...),
+            'to_lower'    => self::to_lower(...),
+            'to_upper'    => self::to_upper(...),
+            'concat'      => self::concat(...)
         ];
     }
     
+    //==================================================================================================================
+    public static function contains(ValueType $string, ValueType $search)
+        : LogicalType
+    {
+        $str = $string->value;
+        $s   = $search->value;
+
+        if (is_string($str) && is_string($s))
+        {
+            return LogicalType::fromBool(str_contains($str, $s));
+        }
+
+        return LogicalType::False;
+    }
+
     //==================================================================================================================
     public static function starts_with(ValueType $value, ValueType $search)
         : LogicalType
@@ -104,7 +119,7 @@ class StringExtension
         : ValueType
     {
         $parts  = [ $value, ...$elements ];
-        $result = "";
+        $result = '';
 
         foreach ($parts as $part)
         {

@@ -28,10 +28,6 @@ use Technically\CallableReflection\CallableReflection;
 
 
 
-/**
- * @phpstan-type FilterValue LogicalType|NodesType|ValueType
- * @phpstan-type FunctionExtensionCallable callable(FilterValue...):FilterValue
- */
 final readonly class FunctionExtension
 {
     //==================================================================================================================
@@ -42,7 +38,7 @@ final readonly class FunctionExtension
     //==================================================================================================================
     private static function validateType(string $element, string $extName, ?\ReflectionType $type)
         : void
-    {        
+    {
         if ($type === null)
         {
             $error = "invalid $element for function extension '$extName', "
@@ -72,7 +68,6 @@ final readonly class FunctionExtension
     }
 
     /**
-     * @param FunctionExtensionCallable $callable
      * @throws \ReflectionException
      */
     private static function getReflector(callable $callable)
@@ -90,7 +85,7 @@ final readonly class FunctionExtension
 
     //==================================================================================================================
     /**
-     * @var FunctionExtensionCallable $callable
+     * @var callable $callable
      */
     private mixed $callable;
     private int   $applicableContexts;
@@ -108,8 +103,6 @@ final readonly class FunctionExtension
     //==================================================================================================================
     /**
      * @param non-empty-string $extensionName
-     * @param FunctionExtensionCallable $callable
-     * 
      * @param-later-invoked-callable $callable
      */
     public function __construct(

@@ -29,8 +29,6 @@ use JsonScout\JsonPath\Function\Builtins\StringExtension;
 use JsonScout\JsonPath\Function\Builtins\TypeExtension;
 
 /**
- * @phpstan-import-type FunctionExtensionCallable from FunctionExtension
- * 
  * Manages a global list of function extensions for JSONPath queries.
  * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry%23lang-php
  */
@@ -139,8 +137,8 @@ final class FunctionRegistry
      * 
      * @link https://elandasunshine.github.io/wiki?page=JsonScout/types/FunctionRegistry/registerExtension%23lang-php
      * 
-     * @param non-empty-string          $name      The name of the function extension
-     * @param FunctionExtensionCallable $invocable The callable to register
+     * @param non-empty-string  $name      The name of the function extension
+     * @param callable          $invocable The callable to register
      * 
      * @param-later-invoked-callable $invocable
      */

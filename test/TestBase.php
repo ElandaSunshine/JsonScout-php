@@ -1,47 +1,64 @@
 <?php
 declare(strict_types=1);
-require_once '../vendor/autoload.php';
 
 use JsonScout\JsonScout;
+use PHPUnit\Framework\TestCase;
 
 
 
-readonly class TestBase
+abstract class TestBase
+    extends TestCase
 {
     //==================================================================================================================
-    private static function compareResults(array $arr1, array $arr2)
+    private static function compareResults(array $expected, array $input, ?array &$error)
         : bool
     {
-        if (count($arr1) !== count($arr2))
+        if (count($expected) !== count($input))
         {
+            $error = [
+                "Expected: " . var_export($expected, true),
+                "Got: " . var_export($input, true)
+            ];
             return false;
         }
         
-        foreach ($arr1 as $i => $element)
+        foreach ($expected as $i => $element)
         {
-            if (!array_key_exists($i, $arr2))
+            if (!array_key_exists($i, $input))
             {
+                $error = [
+                    "Expected: '$i' => " . var_export($element),
+                    "Got: undefined",
+                ];
                 return false;
             }
             
-            $element2 = $arr2[$i];
+            $element2 = $input[$i];
             
             if ($element instanceof \stdClass)
             {
                 if (!($element2 instanceof \stdClass) || $element != $element2)
                 {
+                    $error = [
+                        "Expected: " . var_export($element, true),
+                        "Got: " . var_export($element2, true)
+                    ];
                     return false;
                 }
             }
             else if (is_array($element))
             {
-                if (!self::compareResults($element, $element2))
+                if (!self::compareResults($element, $element2, $error))
                 {
                     return false;
                 }
             }
             else if ($element !== $element2)
             {
+                $error = [
+                    "Expected: " . var_export($element, true),
+                    "Got: " . var_export($element2, true)
+                ];
                 return false;
             }
         }
@@ -50,17 +67,11 @@ readonly class TestBase
     }
 
     //==================================================================================================================
-    /**
-     * @param array<non-empty-string,array{'data':string|stdClass|array<mixed>, 'expect':array<mixed>, 'order'?:false}> $testCases 
-     * @param array<non-empty-string,array<mixed>> $dataTable
-     */
-    public function __construct(
-        public array $testCases,
-        public array $dataTable
-    ) {}
+    protected array $testData  = [];
+    protected array $testCases = [];
 
     //==================================================================================================================
-    public function runTests()
+    public function testSuite()
         : void
     {
         $fail_count = 0;
@@ -68,7 +79,7 @@ readonly class TestBase
 
         foreach ($this->testCases as $query => $data)
         {
-            $json_data = (is_string($data['data']) ? $this->dataTable[$data['data']] : $data['data']);
+            $json_data = (is_string($data['data']) ? $this->testData[$data['data']] : $data['data']);
             $expected  = $data['expect'];
             $result    = JsonScout::query($query, $json_data)->toArray();
             
@@ -78,19 +89,24 @@ readonly class TestBase
                 @sort($expected);
             }
             
-            if (!self::compareResults($result, $expected))
+            $error = null;
+            $eval = self::compareResults($expected, $result, $error);
+
+            if (isset($data['fail']) && $data['fail'] === true)
             {
-                echo "Failed query '$query':\n";
-                echo "Got: "      . var_export($result,   true) . "\n";
-                echo "Expected: " . var_export($expected, true) . "\n\n";
-                
-                ++$fail_count;
+                self::assertFalse($eval, "expected was equal to input");
+            }
+            else
+            {
+                self::assertTrue(
+                    $eval,
+                    ($error !== null ? "query '$query' has failed:\n" . $error[0] . "\n" . $error[1] : '')
+                );
             }
         }
 
         $time_end  = microtime(true);
         $time_diff = ($time_end - $time_start);
 
-        echo "Tests finished!\nFailed $fail_count out of " . count($this->testCases) . " tests! (in $time_diff seconds)";
     }
 }

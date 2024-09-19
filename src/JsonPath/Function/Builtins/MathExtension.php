@@ -23,6 +23,7 @@ namespace JsonScout\JsonPath\Function\Builtins;
 
 use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\ValueType;
+use JsonScout\Util\RefUtil;
 
 
 
@@ -34,19 +35,18 @@ class MathExtension
     public function createExtension()
         : array
     {
-        /** @phpstan-ignore return.type */
         return [
-            'add'   => [ self::class, 'add'   ],
-            'sub'   => [ self::class, 'sub'   ],
-            'div'   => [ self::class, 'div'   ],
-            'mul'   => [ self::class, 'mul'   ],
-            'min'   => [ self::class, 'min'   ],
-            'max'   => [ self::class, 'max'   ],
-            'abs'   => [ self::class, 'abs'   ],
-            'ceil'  => [ self::class, 'ceil'  ],
-            'floor' => [ self::class, 'floor' ],
-            'round' => [ self::class, 'round' ],
-            'trunc' => [ self::class, 'trunc' ],
+            'add'   => self::add(...),
+            'sub'   => self::sub(...),
+            'div'   => self::div(...),
+            'mul'   => self::mul(...),
+            'min'   => self::min(...),
+            'max'   => self::max(...),
+            'abs'   => self::abs(...),
+            'ceil'  => self::ceil(...),
+            'floor' => self::floor(...),
+            'round' => self::round(...),
+            'trunc' => self::trunc(...)
         ];
     }
     

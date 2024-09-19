@@ -31,7 +31,7 @@ singularQuery
 logicalAndExpression: basicExpression (S* OP_AND S* basicExpression)*;
 logicalOrExpression: logicalAndExpression (S* OP_OR S* logicalAndExpression)*;
 
-testExpression: (OP_NOT S)? (filterQuery | functionExpression);
+testExpression: (OP_NOT S*)? (filterQuery | functionExpression);
 comparisonExpression: left=comparable S* OP_COMP S* right=comparable;
 
 parenExpression: (OP_NOT S*)? OP_PAREN_OPEN S* logicalExpression S* OP_PAREN_CLOSE;

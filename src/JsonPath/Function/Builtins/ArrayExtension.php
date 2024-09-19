@@ -23,6 +23,7 @@ namespace JsonScout\JsonPath\Function\Builtins;
 
 use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\LogicalType;
+use JsonScout\JsonPath\Object\Nothing;
 use JsonScout\JsonPath\Object\ValueType;
 
 
@@ -35,6 +36,23 @@ class ArrayExtension
     public function createExtension()
         : array
     {
-        return [];
+        return [
+            'in' => self::in(...)
+        ];
+    }
+
+    //==================================================================================================================
+    public static function in(ValueType $array, ValueType $search)
+        : LogicalType
+    {
+        $arr = $array->value;
+        $s   = $search->value;
+
+        if ((is_array($arr) || $arr instanceof \stdClass) && $s !== Nothing::NoValue)
+        {
+            return LogicalType::fromBool(in_array($s, (array) $arr, true));
+        }
+
+        return LogicalType::False;
     }
 }

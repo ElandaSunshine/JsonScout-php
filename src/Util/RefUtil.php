@@ -25,6 +25,7 @@ namespace JsonScout\Util;
 
 class RefUtil
 {
+    //==================================================================================================================
     public static function getUnqualifiedName(string $typeName)
         : string
     {

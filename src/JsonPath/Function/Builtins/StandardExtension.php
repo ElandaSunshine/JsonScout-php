@@ -25,6 +25,7 @@ use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\NodesType;
 use JsonScout\JsonPath\Object\ValueType;
+use JsonScout\Util\RefUtil;
 
 
 
@@ -35,13 +36,12 @@ class StandardExtension
     public function createExtension()
         : array
     {
-        /** @phpstan-ignore return.type */
         return [
-            'length' => [ self::class, 'length' ],
-            'count'  => [ self::class, 'count'  ],
-            'match'  => [ self::class, 'match'  ],
-            'search' => [ self::class, 'search' ],
-            'value'  => [ self::class, 'value'  ],
+            'length' => self::length(...),
+            'count'  => self::count(...),
+            'match'  => self::match(...),
+            'search' => self::search(...),
+            'value'  => self::value(...)
         ];
     }
 

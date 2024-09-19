@@ -1,0 +1,132 @@
+[
+    {
+        "name": "Ao (English)",
+        "hex": "#008000",
+        "rgb": [0, 128, 0]
+    },
+    {
+        "name": "Aurometalsaurus",
+        "hex": "#6e7f80",
+        "rgb": [110, 127, 128]
+    },
+    {
+        "name": "Blue Sapphire",
+        "hex": "#126180",
+        "rgb": [18, 97, 128]
+    },
+    {
+        "name": "Burgundy",
+        "hex": "#800020",
+        "rgb": [128, 0, 32]
+    },
+    {
+        "name": "Dark Pink",
+        "hex": "#e75480",
+        "rgb": [231, 84, 128]
+    },
+    {
+        "name": "Ecru",
+        "hex": "#c2b280",
+        "rgb": [194, 178, 128]
+    },
+    {
+        "name": "Falu Red",
+        "hex": "#801818",
+        "rgb": [128, 24, 24]
+    },
+    {
+        "name": "Gray",
+        "hex": "#808080",
+        "rgb": [128, 128, 128]
+    },
+    {
+        "name": "Gray (Html/Css Gray)",
+        "hex": "#808080",
+        "rgb": [128, 128, 128]
+    },
+    {
+        "name": "Green (Html/Css Green)",
+        "hex": "#008000",
+        "rgb": [0, 128, 0]
+    },
+    {
+        "name": "Heart Gold",
+        "hex": "#808000",
+        "rgb": [128, 128, 0]
+    },
+    {
+        "name": "Light Coral",
+        "hex": "#f08080",
+        "rgb": [240, 128, 128]
+    },
+    {
+        "name": "Maroon (Html/Css)",
+        "hex": "#800000",
+        "rgb": [128, 0, 0]
+    },
+    {
+        "name": "Napier Green",
+        "hex": "#2a8000",
+        "rgb": [42, 128, 0]
+    },
+    {
+        "name": "Navy Blue",
+        "hex": "#000080",
+        "rgb": [0, 0, 128]
+    },
+    {
+        "name": "Office Green",
+        "hex": "#008000",
+        "rgb": [0, 128, 0]
+    },
+    {
+        "name": "Old Rose",
+        "hex": "#c08081",
+        "rgb": [192, 128, 129]
+    },
+    {
+        "name": "Olive",
+        "hex": "#808000",
+        "rgb": [128, 128, 0]
+    },
+    {
+        "name": "Patriarch",
+        "hex": "#800080",
+        "rgb": [128, 0, 128]
+    },
+    {
+        "name": "Purple (Html/Css)",
+        "hex": "#800080",
+        "rgb": [128, 0, 128]
+    },
+    {
+        "name": "Regalia",
+        "hex": "#522d80",
+        "rgb": [82, 45, 128]
+    },
+    {
+        "name": "Russet",
+        "hex": "#80461b",
+        "rgb": [128, 70, 27]
+    },
+    {
+        "name": "Sand",
+        "hex": "#c2b280",
+        "rgb": [194, 178, 128]
+    },
+    {
+        "name": "Slate Gray",
+        "hex": "#708090",
+        "rgb": [112, 128, 144]
+    },
+    {
+        "name": "Teal",
+        "hex": "#008080",
+        "rgb": [0, 128, 128]
+    },
+    {
+        "name": "Trolley Grey",
+        "hex": "#808080",
+        "rgb": [128, 128, 128]
+    }
+]

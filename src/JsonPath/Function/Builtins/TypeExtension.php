@@ -22,11 +22,9 @@
 namespace JsonScout\JsonPath\Function\Builtins;
 
 use JsonScout\JsonPath\Function\IExtensionProvider;
-use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\Nothing;
 use JsonScout\JsonPath\Object\ValueType;
-
-
+use JsonScout\Util\RefUtil;
 
 class TypeExtension
     implements IExtensionProvider
@@ -36,14 +34,10 @@ class TypeExtension
     public function createExtension()
         : array
     {
-        /** @phpstan-ignore return.type */
         return [
-            'array'  => [ self::class, 'array'  ],
-            'object' => [ self::class, 'object' ],
-            'string' => [ self::class, 'string' ],
-            'number' => [ self::class, 'number' ],
-            'bool'   => [ self::class, 'bool'   ],
-            'typeof' => [ self::class, 'typeof' ],
+            'array'  => self::array(...),
+            'object' => self::object(...),
+            'typeof' => self::typeof(...)
         ];
     }
     
@@ -91,81 +85,6 @@ class TypeExtension
         }
 
         return new ValueType($result);
-    }
-    
-    //==================================================================================================================
-    public static function string(ValueType $value)
-        : ValueType
-    {
-        $val = $value->value;
-        
-        if (is_string($val))
-        {
-            return $value;
-        }
-        
-        if (is_float($val) || is_int($val))
-        {
-            return new ValueType(''.$val);
-        }
-        
-        if (is_bool($val))
-        {
-            return new ValueType($val ? 'true' : 'false');
-        }
-        
-        if (is_array($val) || $val instanceof \stdClass)
-        {
-            return new ValueType(json_encode($val));
-        }
-        
-        if ($val === null)
-        {
-            return new ValueType('null');
-        }
-        
-        return $value;
-    }
-    
-    public static function number(ValueType $value)
-        : ValueType
-    {
-        $val = $value->value;
-
-        if (is_float($val) || is_int($val))
-        {
-            return new ValueType($val);
-        }
-        
-        if (is_array($val) || $val instanceof \stdClass)
-        {
-            return new ValueType(0);
-        }
-        
-        if ($val !== Nothing::NoValue)
-        {
-            return new ValueType((float) $val);
-        }
-        
-        return $value;
-    }
-    
-    public static function bool(ValueType $value)
-        : ValueType
-    {
-        $val = $value->value;
-
-        if (is_string($val))
-        {
-            return new ValueType($val !== '');
-        }
-        
-        if ($val !== Nothing::NoValue)
-        {
-            return new ValueType((bool) $val);
-        }
-        
-        return $value;
     }
 
     //==================================================================================================================

@@ -24,6 +24,7 @@ namespace JsonScout\JsonPath\Expression;
 use JsonScout\JsonPath\Function\ExceptionFunctionExtension;
 use JsonScout\JsonPath\Function\FunctionExtension;
 use JsonScout\JsonPath\Function\FunctionRegistry;
+use JsonScout\JsonPath\Object\Location;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\NodesType;
@@ -76,6 +77,9 @@ final readonly class FunctionExpression
 
     //==================================================================================================================
     public FunctionExtension $extension;
+    
+    //------------------------------------------------------------------------------------------------------------------
+    private ValueType|LogicalType|NodesType|null $cache;
 
     //==================================================================================================================
     /**
@@ -135,12 +139,18 @@ final readonly class FunctionExpression
         }
 
         $this->extension = $extension;
+        $this->cache     = $this->precompile();
     }
 
     //==================================================================================================================
     public function evaluate(Node $root, Node $current)
         : ValueType|LogicalType|NodesType
     {
+        if ($this->cache !== null)
+        {
+            return $this->cache;
+        }
+        
         $args = [];
 
         foreach ($this->arguments as $i => $argument)
@@ -232,7 +242,8 @@ final readonly class FunctionExpression
     }
     //==================================================================================================================
     public function validForContext(int $context) : bool { return ($this->extension->canBeUsedFor($context)); }
-
+    public function isPrecompiled() : bool { return ($this->cache !== null); }
+    
     //==================================================================================================================
     /**
      * @return class-string
@@ -247,5 +258,24 @@ final readonly class FunctionExpression
 
         /** @var class-string */
         return $param->getType()->getName();
+    }
+    
+    private function precompile()
+        : ValueType|LogicalType|NodesType|null
+    {
+        $should_compile = true;
+        
+        foreach ($this->arguments as $arg)
+        {
+            if (!($arg instanceof Literal)
+                && (!($arg instanceof FunctionExpression) || $arg->cache === null))
+            {
+                $should_compile = false;
+                break;
+            }
+        }
+        
+        $empty = new Node(new Location('', null), null);
+        return ($should_compile ? $this->evaluate($empty, $empty) : null);
     }
 }
