@@ -25,8 +25,7 @@ use JsonScout\JsonPath\Function\IExtensionProvider;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\Nothing;
 use JsonScout\JsonPath\Object\ValueType;
-
-
+use JsonScout\Util\TypeUtil;
 
 class CommonExtension
     implements IExtensionProvider
@@ -36,6 +35,53 @@ class CommonExtension
     public function createExtension()
         : array
     {
-        return [];
+        return [
+            'any_of' => self::any_of(...),
+            'all_of' => self::all_of(...),
+            'none_of' => self::none_of(...)
+        ];
+    }
+
+    //==================================================================================================================
+    public static function any_of(ValueType $value, ValueType ...$search)
+        : LogicalType
+    {
+        foreach ($search as $s)
+        {
+            if (TypeUtil::equalityCompareOperands($value, $s))
+            {
+                return LogicalType::True;
+            }
+        }
+
+        return LogicalType::False;
+    }
+
+    public static function all_of(ValueType $value, ValueType ...$search)
+        : LogicalType
+    {
+        foreach ($search as $s)
+        {
+            if (!TypeUtil::equalityCompareOperands($value, $s))
+            {
+                return LogicalType::False;
+            }
+        }
+
+        return LogicalType::True;
+    }
+
+    public static function none_of(ValueType $value, ValueType ...$search)
+        : LogicalType
+    {
+        foreach ($search as $s)
+        {
+            if (TypeUtil::equalityCompareOperands($value, $s))
+            {
+                return LogicalType::False;
+            }
+        }
+
+        return LogicalType::True;
     }
 }

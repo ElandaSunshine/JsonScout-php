@@ -27,47 +27,11 @@ use JsonScout\JsonPath\Object\Node;
 use JsonScout\JsonPath\Object\LogicalType;
 use JsonScout\JsonPath\Object\ValueType;
 use JsonScout\Util\RefUtil;
-
-
+use JsonScout\Util\TypeUtil;
 
 final readonly class ComparisonExpression
     extends AbstractLogicalExpression
 {
-    //==================================================================================================================
-    private static function compareEqual(ValueType $left, ValueType $right)
-        : bool
-    {
-        $lvalue = $left ->value;
-        $rvalue = $right->value;
-        
-        if (((is_int($lvalue) || is_float($lvalue)) && (is_int($rvalue) || is_float($rvalue)))
-            || (($lvalue instanceof \stdClass) && ($rvalue instanceof \stdClass)))
-        {
-            return ($lvalue == $rvalue);
-        }
-
-        return ($lvalue === $rvalue);
-    }
-
-    private static function compareLess(ValueType $left, ValueType $right)
-        : bool
-    {
-        $lvalue = $left ->value;
-        $rvalue = $right->value;
-
-        if ((is_int($lvalue) || is_float($lvalue)) && (is_int($rvalue) || is_float($rvalue)))
-        {
-            return ($lvalue < $rvalue);
-        }
-        
-        if (is_string($lvalue) && is_string($rvalue))
-        {
-            return (strcmp($lvalue, $rvalue) < 0);
-        }
-
-        return false;
-    }
-
     //==================================================================================================================
     private static function validateComparable(IComparable $comparable)
         : void
@@ -107,15 +71,15 @@ final readonly class ComparisonExpression
         $right = $this->right->toComparable($root, $current);
 
         return LogicalType::fromBool(match($this->type) {
-            ComparisonOperation::Equal       => self::compareEqual($left,  $right),
-            ComparisonOperation::NotEqual    => !self::compareEqual($left,  $right),
-            ComparisonOperation::LessThan    => self::compareLess($left,  $right),
-            ComparisonOperation::GreaterThan => self::compareLess($right, $left),
+            ComparisonOperation::Equal       =>  TypeUtil::equalityCompareOperands($left,  $right),
+            ComparisonOperation::NotEqual    => !TypeUtil::equalityCompareOperands($left,  $right),
+            ComparisonOperation::LessThan    =>  TypeUtil::lessCompareOperands    ($left,  $right),
+            ComparisonOperation::GreaterThan =>  TypeUtil::lessCompareOperands    ($right, $left),
 
             ComparisonOperation::LessThanOrEqual
-                => (self::compareLess($left, $right) || self::compareEqual($left, $right)),
+                => (TypeUtil::lessCompareOperands($left, $right) || TypeUtil::equalityCompareOperands($left, $right)),
             ComparisonOperation::GreaterThanOrEqual
-                => (self::compareLess($right, $left) || self::compareEqual($left, $right))
+                => (TypeUtil::lessCompareOperands($right, $left) || TypeUtil::equalityCompareOperands($left, $right))
         });
     }
 }

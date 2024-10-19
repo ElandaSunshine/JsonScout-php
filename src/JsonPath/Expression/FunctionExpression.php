@@ -151,15 +151,7 @@ final readonly class FunctionExpression
             return $this->cache;
         }
         
-        $args = [];
-
-        foreach ($this->arguments as $i => $argument)
-        {
-            $class  = $this->getExpectedClassForArgument($i);
-            $args[] = $argument->toParameter($class, $root, $current);
-        }
-
-        return $this->extension->invoke(...$args);
+        return $this->evaluateHelper($root, $current);
     }
 
     //==================================================================================================================
@@ -276,6 +268,20 @@ final readonly class FunctionExpression
         }
         
         $empty = new Node(new Location('', null), null);
-        return ($should_compile ? $this->evaluate($empty, $empty) : null);
+        return ($should_compile ? $this->evaluateHelper($empty, $empty) : null);
+    }
+
+    private function evaluateHelper(Node $root, Node $current)
+        : ValueType|LogicalType|NodesType
+    {
+        $args = [];
+
+        foreach ($this->arguments as $i => $argument)
+        {
+            $class  = $this->getExpectedClassForArgument($i);
+            $args[] = $argument->toParameter($class, $root, $current);
+        }
+
+        return $this->extension->invoke(...$args);
     }
 }
